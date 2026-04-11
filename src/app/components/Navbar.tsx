@@ -1,0 +1,71 @@
+import { Link, useLocation } from "react-router";
+import logo from "figma:asset/ebfd5b8d0e238183642c1f03544a20072e4c3aa3.png";
+
+export function Navbar() {
+  const location = useLocation();
+
+  const menuItems = [
+    { path: "/", label: "ANASAYFA" },
+    { path: "/hakkimizda", label: "HAKKIMIZDA" },
+    { path: "/hizmetler", label: "HİZMETLER" },
+    { path: "/referanslar", label: "REFERANSLAR" },
+    { path: "/iletisim", label: "İLETİŞİM" },
+  ];
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 bg-white/50 backdrop-blur-md shadow-sm z-50">
+      <div className="max-w-[1440px] mx-auto px-12 h-[72px] flex items-center justify-between">
+        <Link to="/" className="flex items-center">
+          <span className="flex items-center gap-3">
+            <img src={logo} alt="DPI TEKNOLOJİ Logo" className="h-[56px]" />
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-10">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="relative overflow-hidden h-[24px] flex items-center group"
+            >
+              <div className="relative transition-transform duration-300 ease-out group-hover:-translate-y-full">
+                {/* Orijinal yazı (siyah) - yukarı kayar */}
+                <span
+                  className="text-[15px] tracking-wide font-medium block"
+                  style={{
+                    color: isActive(item.path) ? "#12487c" : "#333333",
+                  }}
+                >
+                  {item.label}
+                </span>
+
+                {/* Mavi yazı - alttan gelir */}
+                <span
+                  className="text-[15px] tracking-wide font-medium block absolute top-full left-0"
+                  style={{ color: "#12487c" }}
+                >
+                  {item.label}
+                </span>
+              </div>
+
+              {/* Alt çizgi - sadece aktif sayfa için */}
+              {isActive(item.path) && (
+                <div
+                  className="absolute -bottom-[22px] left-0 right-0 h-[2px]"
+                  style={{ backgroundColor: "#12487c" }}
+                />
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
