@@ -8,6 +8,7 @@ export function Iletisim() {
     name: "",
     email: "",
     phone: "",
+    subject: "",
     message: "",
   });
 
@@ -17,10 +18,10 @@ export function Iletisim() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Mesajınız alındı! En kısa sürede sizinle iletişime geçeceğiz.");
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -101,15 +102,45 @@ export function Iletisim() {
 
                 <div>
                   <label className="block text-gray-700 text-[15px] mb-2">
-                    Telefon
+                    Telefon *
                   </label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 text-[15px] mb-2">
+                    Konu *
+                  </label>
+                  <select
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors bg-white appearance-none"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "right 16px center",
+                      paddingRight: 44,
+                    }}
+                  >
+                    <option value="" disabled>
+                      Lütfen bir konu seçin
+                    </option>
+                    <option value="Profesyonel Led Ekran Sistemleri">Profesyonel Led Ekran Sistemleri</option>
+                    <option value="Profesyonel Ses, Işık ve Görüntü Sistemi">Profesyonel Ses, Işık ve Görüntü Sistemi</option>
+                    <option value="Zayıf Akım Sistemleri">Zayıf Akım Sistemleri</option>
+                    <option value="Teknik Danışmanlık">Teknik Danışmanlık</option>
+                    <option value="Teklif / Fiyat Bilgisi">Teklif / Fiyat Bilgisi</option>
+                    <option value="Diğer">Diğer</option>
+                  </select>
                 </div>
 
                 <div>
