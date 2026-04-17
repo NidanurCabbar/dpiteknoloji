@@ -103,33 +103,6 @@ export function Hakkimizda() {
             </FadeIn>
             <FadeIn direction="right" delay={0.2}>
               <div className="space-y-6">
-                {/* Öne çıkan rakamlar */}
-                <div
-                  className="rounded-xl p-8"
-                  style={{ backgroundColor: "var(--dpi-blue)", position: "relative", overflow: "hidden" }}
-                >
-                  <TechPattern variant="dark" />
-                  <div style={{ position: "relative", zIndex: 1 }}>
-                    <div className="grid grid-cols-2 gap-6">
-                      {[
-                        { value: "500+", label: "Proje" },
-                        { value: "15+", label: "Yıl Deneyim" },
-                        { value: "200+", label: "Kurumsal Müşteri" },
-                        { value: "7/24", label: "Teknik Destek" },
-                      ].map((stat) => (
-                        <div key={stat.label} className="text-center">
-                          <div
-                            className="text-[32px] leading-none mb-1"
-                            style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-accent-light)" }}
-                          >
-                            {stat.value}
-                          </div>
-                          <p className="text-white/70 text-[13px]">{stat.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
                 {/* Kısa liste */}
                 <div className="rounded-xl border border-gray-100 p-8">
                   <h4
