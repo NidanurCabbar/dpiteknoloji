@@ -4,12 +4,22 @@ import { TopBar } from "./TopBar";
 import { Footer } from "./Footer";
 import { StickyButtons } from "./StickyButtons";
 import { LoginModal } from "./LoginModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 
 export function Root() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const location = useLocation();
   const isAdminPage = location.pathname === "/admin";
+
+  // Route değişiminde sayfayı en üste kaydır
+  useLayoutEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
