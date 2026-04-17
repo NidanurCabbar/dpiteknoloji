@@ -156,60 +156,49 @@ export function Anasayfa() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-20 bg-white">
-        <div className="relative max-w-[1200px] mx-auto px-12">
+      {/* CTA Section — Teknik Danışmanlık */}
+      <section
+        className="relative py-24 overflow-hidden"
+        style={{ background: "linear-gradient(135deg, var(--dpi-blue) 0%, var(--dpi-blue-dark) 100%)" }}
+      >
+        <TechPattern variant="dark" />
+        <div className="relative max-w-[1200px] mx-auto px-12 text-center">
           <FadeIn>
-            <div
-              className="rounded-2xl overflow-hidden"
+            <h2
+              className="text-[42px] text-white mb-6"
+              style={{ fontFamily: "var(--font-family-heading)" }}
+            >
+              Projeniz için <span style={{ color: "var(--dpi-accent-light)" }}>Teknik Danışmanlık</span>
+            </h2>
+            <p className="text-white/80 text-[18px] mb-10 max-w-[700px] mx-auto">
+              Deneyimli ekibimiz, projenizin ihtiyaçlarını analiz ederek size özel çözümler sunar
+            </p>
+            <a
+              href="/iletisim"
               style={{
-                background: "linear-gradient(135deg, var(--dpi-blue) 0%, var(--dpi-blue-dark) 100%)",
-                padding: "64px 48px",
-                textAlign: "center",
-                position: "relative",
+                display: "inline-block",
+                backgroundColor: "var(--dpi-accent)",
+                color: "#ffffff",
+                fontFamily: "var(--font-family-heading)",
+                fontWeight: 600,
+                fontSize: 16,
+                padding: "14px 36px",
+                borderRadius: 8,
+                textDecoration: "none",
+                boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
+                transition: "transform 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(232,134,12,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
               }}
             >
-              <TechPattern variant="dark" />
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <h2
-                  className="text-[36px] text-white mb-4"
-                  style={{ fontFamily: "var(--font-family-heading)" }}
-                >
-                  Projeniz İçin <span style={{ color: "var(--dpi-accent-light)" }}>Ücretsiz</span> Keşif
-                </h2>
-                <p className="text-white/80 text-[17px] mb-8 max-w-[600px] mx-auto">
-                  Deneyimli ekibimiz projenizin ihtiyaçlarını yerinde analiz ederek size özel teknik çözüm sunar.
-                </p>
-                <a
-                  href="/iletisim"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                    backgroundColor: "var(--dpi-accent)",
-                    color: "#ffffff",
-                    fontFamily: "var(--font-family-heading)",
-                    fontWeight: 600,
-                    fontSize: 16,
-                    padding: "14px 36px",
-                    borderRadius: 8,
-                    textDecoration: "none",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 8px 24px rgba(232,134,12,0.4)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
-                  }}
-                >
-                  İletişime Geçin
-                </a>
-              </div>
-            </div>
+              İletişime Geçin
+            </a>
           </FadeIn>
         </div>
       </section>
