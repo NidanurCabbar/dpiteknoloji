@@ -22,7 +22,7 @@ export function Hizmetler() {
         "En son teknoloji LED ekran sistemleri ile etkinliklerinize, mekanlarınıza ve projelerinize görsel mükemmellik katıyoruz. Yüksek parlaklık değerleri, geniş görüş açıları ve uzun ömürlü yapısıyla profesyonel LED çözümlerimiz, her türlü ihtiyaca cevap verir.",
     },
     {
-      title: "Profesyonel Ses, Işık Ve Görüntü Sistemi",
+      title: "Profesyonel Ses, Işık ve Görüntü Sistemi",
       image: "https://images.unsplash.com/photo-1773625545016-d575264483e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhdWRpbyUyMHNvdW5kJTIwc3lzdGVtJTIwY29uY2VydHxlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       features: [
         "Konser ve etkinlik ses sistemleri",
@@ -110,7 +110,7 @@ export function Hizmetler() {
                   <p className="text-gray-700 text-[16px] leading-relaxed mb-8">
                     {service.description}
                   </p>
-                  <div className="space-y-3">
+                  <div className="space-y-3 mb-8">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-start gap-3">
                         <div
@@ -125,6 +125,39 @@ export function Hizmetler() {
                       </div>
                     ))}
                   </div>
+
+                  <a
+                    href={`/iletisim?konu=${encodeURIComponent(service.title)}`}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      backgroundColor: "var(--dpi-accent)",
+                      color: "#ffffff",
+                      fontFamily: "var(--font-family-heading)",
+                      fontWeight: 600,
+                      fontSize: 15,
+                      padding: "12px 28px",
+                      borderRadius: 8,
+                      textDecoration: "none",
+                      boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 8px 24px rgba(232,134,12,0.4)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Teklif Al
+                  </a>
                 </div>
               </FadeIn>
             </div>

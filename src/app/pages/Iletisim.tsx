@@ -1,9 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router";
 import bgImage from "figma:asset/ed053a64549a21b8e2a9e3260dcdb7a6c82d99f3.png";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 
+const subjectOptions = [
+  "Profesyonel Led Ekran Sistemleri",
+  "Profesyonel Ses, Işık ve Görüntü Sistemi",
+  "Zayıf Akım Sistemleri",
+  "Teknik Danışmanlık",
+  "Teklif / Fiyat Bilgisi",
+  "Diğer",
+];
+
+// URL'den gelen konu değerini, option listesindeki en uygun değere eşle (case-insensitive)
+function matchSubject(raw: string): string {
+  if (!raw) return "";
+  const normalized = raw.trim().toLocaleLowerCase("tr-TR");
+  const match = subjectOptions.find((opt) => opt.toLocaleLowerCase("tr-TR") === normalized);
+  return match ?? "Diğer";
+}
+
 export function Iletisim() {
+  const [searchParams] = useSearchParams();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,6 +32,17 @@ export function Iletisim() {
     subject: "",
     message: "",
   });
+
+  // URL'den ?konu=... parametresi geldiyse subject'i doldur + forma scroll et
+  useEffect(() => {
+    const konu = searchParams.get("konu");
+    if (konu) {
+      setFormData((prev) => ({ ...prev, subject: matchSubject(konu) }));
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [searchParams]);
 
   const address = "Atatürk Mahallesi, Teknoloji Caddesi No: 123, Kat: 4, Çankaya/ANKARA";
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -71,7 +103,7 @@ export function Iletisim() {
               >
                 Bize Ulaşın
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-gray-700 text-[15px] mb-2">
                     Ad Soyad *
@@ -134,12 +166,11 @@ export function Iletisim() {
                     <option value="" disabled>
                       Lütfen bir konu seçin
                     </option>
-                    <option value="Profesyonel Led Ekran Sistemleri">Profesyonel Led Ekran Sistemleri</option>
-                    <option value="Profesyonel Ses, Işık ve Görüntü Sistemi">Profesyonel Ses, Işık ve Görüntü Sistemi</option>
-                    <option value="Zayıf Akım Sistemleri">Zayıf Akım Sistemleri</option>
-                    <option value="Teknik Danışmanlık">Teknik Danışmanlık</option>
-                    <option value="Teklif / Fiyat Bilgisi">Teklif / Fiyat Bilgisi</option>
-                    <option value="Diğer">Diğer</option>
+                    {subjectOptions.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
