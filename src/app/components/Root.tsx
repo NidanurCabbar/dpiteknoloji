@@ -1,5 +1,8 @@
 import { Outlet, useLocation } from "react-router";
 import { Navbar } from "./Navbar";
+import { TopBar } from "./TopBar";
+import { Footer } from "./Footer";
+import { StickyButtons } from "./StickyButtons";
 import { LoginModal } from "./LoginModal";
 import { useState, useEffect } from "react";
 
@@ -22,8 +25,14 @@ export function Root() {
 
   return (
     <div className="min-h-screen bg-white">
+      {!isAdminPage && <TopBar />}
       {!isAdminPage && <Navbar />}
-      <Outlet />
+      <div style={{ paddingTop: isAdminPage ? 0 : 48 }}>
+        <Outlet />
+      </div>
+
+      {!isAdminPage && <Footer />}
+      {!isAdminPage && <StickyButtons />}
 
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>

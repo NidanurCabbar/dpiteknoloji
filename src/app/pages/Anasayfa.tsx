@@ -1,9 +1,14 @@
 import { ServiceCard } from "../components/ServiceCard";
+import { CountUp } from "../components/CountUp";
+import { FadeIn } from "../components/FadeIn";
+import { TechPattern } from "../components/TechPattern";
 import { useRef, useEffect } from "react";
-import bgVideo from "../../imports/led_ekran_aydınlatma.mp4";
+import { useSiteContent } from "../contexts/SiteContentContext";
 
 export function Anasayfa() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { content, heroVideoSrc } = useSiteContent();
+  const { heroTitle, heroDescription } = content.anasayfa;
 
   useEffect(() => {
     if (videoRef.current) {
@@ -11,7 +16,7 @@ export function Anasayfa() {
         console.log("Video autoplay failed:", error);
       });
     }
-  }, []);
+  }, [heroVideoSrc]);
 
   const services = [
     {
@@ -37,8 +42,8 @@ export function Anasayfa() {
   return (
     <div className="pt-[72px]">
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center bg-gradient-to-br from-white via-gray-50 to-white overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
+      <section className="relative w-full aspect-video min-h-[500px] flex items-start justify-center overflow-hidden">
+        <div className="absolute inset-0">
           <video
             ref={videoRef}
             autoPlay
@@ -47,115 +52,165 @@ export function Anasayfa() {
             playsInline
             preload="auto"
             className="w-full h-full object-cover"
-            src={bgVideo}
+            src={heroVideoSrc}
             onLoadedData={() => {
               if (videoRef.current) {
                 videoRef.current.play();
               }
             }}
           />
+          {/* Alt gradient — video ile alt section arasında yumuşak geçiş */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-[160px]"
+            style={{ background: "linear-gradient(to top, #f9fafb, transparent)" }}
+          />
         </div>
-        <div className="relative z-10 max-w-[1200px] mx-auto px-12 text-center">
-          <h1 className="text-[56px] mb-6 tracking-tight" style={{ color: "#12487c" }}>
-            Teknoloji ve Güvenilirlik
-          </h1>
-          <p className="text-[20px] text-gray-600 max-w-[800px] mx-auto leading-relaxed">
-            DPI TEKNOLOJİ, büyük ölçekli LED ekran, profesyonel ses ve ışıklandırma sistemleri
-            konusunda kurumsal çözümler sunan lider teknoloji şirketidir.
-          </p>
+        <div className="relative z-10 max-w-[1200px] mx-auto px-12 pt-12 text-center">
+          <FadeIn direction="up" delay={0.2}>
+            <h1
+              className="text-[56px] mb-6 tracking-tight text-white"
+              style={{
+                fontFamily: "var(--font-family-heading)",
+                textShadow: "0 2px 16px rgba(0,0,0,0.55)",
+              }}
+            >
+              {heroTitle.includes("Güvenilirlik")
+                ? <>
+                    {heroTitle.split("Güvenilirlik")[0]}
+                    <span style={{ color: "var(--dpi-accent-light)" }}>Güvenilirlik</span>
+                    {heroTitle.split("Güvenilirlik")[1]}
+                  </>
+                : heroTitle
+              }
+            </h1>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.4}>
+            <p
+              className="text-[20px] text-white max-w-[800px] mx-auto leading-relaxed"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
+            >
+              {heroDescription}
+            </p>
+          </FadeIn>
         </div>
       </section>
 
       {/* Service Cards Section */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-[1200px] mx-auto px-12">
-          <div className="text-center mb-16">
-            <h2 className="text-[42px] mb-4" style={{ color: "#12487c" }}>
-              Hizmetlerimiz
-            </h2>
-            <p className="text-gray-600 text-[18px]">
-              Kartlara tıklayarak detaylı bilgi alabilirsiniz
-            </p>
-          </div>
+      <section className="relative py-24 bg-gray-50">
+        <TechPattern variant="light" />
+        <div className="relative max-w-[1200px] mx-auto px-12">
+          <FadeIn>
+            <div className="text-center mb-16">
+              <p
+                className="text-[14px] font-semibold tracking-[3px] uppercase mb-3"
+                style={{ color: "var(--dpi-accent)" }}
+              >
+                Neler Yapıyoruz
+              </p>
+              <h2
+                className="text-[42px] mb-4"
+                style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+              >
+                Hizmetlerimiz
+              </h2>
+              <p className="text-gray-500 text-[17px]">
+                Kartlara tıklayarak detaylı bilgi alabilirsiniz
+              </p>
+            </div>
+          </FadeIn>
 
-          <div className="space-y-8">
-            {services.map((service, index) => (
-              <ServiceCard key={index} {...service} />
-            ))}
-          </div>
+          <FadeIn delay={0.15}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {services.map((service, index) => (
+                <ServiceCard key={index} {...service} />
+              ))}
+            </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-[1200px] mx-auto px-12">
-          <div className="grid grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="text-[48px] mb-2" style={{ color: "#12487c" }}>
-                500+
-              </div>
-              <p className="text-gray-600 text-[16px]">Tamamlanan Proje</p>
-            </div>
-            <div className="text-center">
-              <div className="text-[48px] mb-2" style={{ color: "#12487c" }}>
-                15+
-              </div>
-              <p className="text-gray-600 text-[16px]">Yıllık Deneyim</p>
-            </div>
-            <div className="text-center">
-              <div className="text-[48px] mb-2" style={{ color: "#12487c" }}>
-                200+
-              </div>
-              <p className="text-gray-600 text-[16px]">Kurumsal Müşteri</p>
-            </div>
+      <section className="relative py-24 overflow-hidden" style={{ backgroundColor: "var(--dpi-blue)" }}>
+        <TechPattern variant="dark" />
+        <div className="relative max-w-[1200px] mx-auto px-12">
+          <FadeIn>
+            <p
+              className="text-center text-[14px] font-semibold tracking-[3px] uppercase mb-3"
+              style={{ color: "var(--dpi-accent-light)" }}
+            >
+              Rakamlarla DPI
+            </p>
+            <h2
+              className="text-[36px] text-center text-white mb-16"
+              style={{ fontFamily: "var(--font-family-heading)" }}
+            >
+              Güvenin Somut Kanıtları
+            </h2>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <CountUp end={500} suffix="+" label="Tamamlanan Proje" />
+            <CountUp end={15} suffix="+" label="Yıllık Deneyim" />
+            <CountUp end={200} suffix="+" label="Kurumsal Müşteri" />
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-10" style={{ backgroundColor: "#e8f1f8" }}>
-        <div className="max-w-[1200px] mx-auto px-12">
-          <h2 className="text-[36px] text-center mb-8" style={{ color: "#12487c" }}>
-            İletişim Bilgileri
-          </h2>
-          <div className="grid grid-cols-4 gap-8">
-            <div className="text-center">
-              <h3 className="text-[18px] mb-3" style={{ color: "#12487c" }}>
-                Adres
-              </h3>
-              <p className="text-gray-700 text-[14px] leading-relaxed">
-                Atatürk Mahallesi,<br />
-                Teknoloji Caddesi<br />
-                No: 123, Kat: 4<br />
-                Çankaya / ANKARA
-              </p>
+      {/* CTA Section */}
+      <section className="relative py-20 bg-white">
+        <div className="relative max-w-[1200px] mx-auto px-12">
+          <FadeIn>
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, var(--dpi-blue) 0%, var(--dpi-blue-dark) 100%)",
+                padding: "64px 48px",
+                textAlign: "center",
+                position: "relative",
+              }}
+            >
+              <TechPattern variant="dark" />
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <h2
+                  className="text-[36px] text-white mb-4"
+                  style={{ fontFamily: "var(--font-family-heading)" }}
+                >
+                  Projeniz İçin <span style={{ color: "var(--dpi-accent-light)" }}>Ücretsiz</span> Keşif
+                </h2>
+                <p className="text-white/80 text-[17px] mb-8 max-w-[600px] mx-auto">
+                  Deneyimli ekibimiz projenizin ihtiyaçlarını yerinde analiz ederek size özel teknik çözüm sunar.
+                </p>
+                <a
+                  href="/iletisim"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    backgroundColor: "var(--dpi-accent)",
+                    color: "#ffffff",
+                    fontFamily: "var(--font-family-heading)",
+                    fontWeight: 600,
+                    fontSize: 16,
+                    padding: "14px 36px",
+                    borderRadius: 8,
+                    textDecoration: "none",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 8px 24px rgba(232,134,12,0.4)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
+                  }}
+                >
+                  İletişime Geçin
+                </a>
+              </div>
             </div>
-
-            <div className="text-center">
-              <h3 className="text-[18px] mb-3" style={{ color: "#12487c" }}>
-                Telefon
-              </h3>
-              <p className="text-gray-700 text-[14px]">+90 (312) 123 45 67</p>
-              <p className="text-gray-700 text-[14px]">+90 (312) 123 45 68</p>
-            </div>
-
-            <div className="text-center">
-              <h3 className="text-[18px] mb-3" style={{ color: "#12487c" }}>
-                E-posta
-              </h3>
-              <p className="text-gray-700 text-[14px]">info@dpiteknoloji.com.tr</p>
-              <p className="text-gray-700 text-[14px]">destek@dpiteknoloji.com.tr</p>
-            </div>
-
-            <div className="text-center">
-              <h3 className="text-[18px] mb-3" style={{ color: "#12487c" }}>
-                Çalışma Saatleri
-              </h3>
-              <p className="text-gray-700 text-[14px]">Pazartesi - Cuma:</p>
-              <p className="text-gray-700 text-[14px]">09:00 - 18:00</p>
-              <p className="text-gray-700 text-[14px] mt-1">Cumartesi: 10:00 - 15:00</p>
-            </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </div>

@@ -1,81 +1,48 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useSiteContent, ServiceData, ProjectData, SocialVisibility } from "../contexts/SiteContentContext";
 import { useNavigate } from "react-router";
-
-interface Service {
-  title: string;
-  description: string;
-  features: string[];
-  image: string;
-}
-
-interface Project {
-  client: string;
-  project: string;
-  year: string;
-}
 
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
+  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, setHeroVideoFile } = useSiteContent();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "hesap">("anasayfa");
+  const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "hesap">("anasayfa");
 
-  // Anasayfa state
-  const [heroTitle, setHeroTitle] = useState("Teknoloji ve Güvenilirlik");
-  const [heroDescription, setHeroDescription] = useState("DPI TEKNOLOJİ, büyük ölçekli LED ekran, profesyonel ses ve ışıklandırma sistemleri konusunda kurumsal çözümler sunan lider teknoloji şirketidir.");
+  /* ─── Toast bildirimi ─── */
+  const [toast, setToast] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
-  // Hizmetler state
-  const [services, setServices] = useState<Service[]>([
-    {
-      title: "Profesyonel Led Ekran Sistemleri",
-      description: "En son teknoloji LED ekran sistemleri ile etkinliklerinize, mekanlarınıza ve projelerinize görsel mükemmellik katıyoruz.",
-      features: [
-        "İç ve dış mekan LED ekran kurulumu",
-        "Stadyum ve arena LED sistemleri",
-        "Reklam ve bilgilendirme ekranları",
-      ],
-      image: "https://images.unsplash.com/photo-1575719028439-65ce8662c1cc?w=1080",
-    },
-    {
-      title: "Profesyonel Ses, Işık Ve Görüntü Sistemi",
-      description: "Konserlerden konferanslara, tiyatro sahnesinden açık hava etkinliklerine kadar her ortam için özel tasarlanmış profesyonel ses çözümleri sunuyoruz.",
-      features: [
-        "Konser ve etkinlik ses sistemleri",
-        "Konferans salonu akustiği",
-        "Line array ve point source hoparlör sistemleri",
-      ],
-      image: "https://images.unsplash.com/photo-1773625545016-d575264483e9?w=1080",
-    },
-    {
-      title: "Zayıf Akım Sistemleri",
-      description: "Işıklandırma sistemlerimiz ile mekanlarınızı dönüştürüyor, etkinliklerinize görsel derinlik katıyoruz.",
-      features: [
-        "Mimari cephe aydınlatması",
-        "Sahne ve etkinlik ışıklandırması",
-        "LED ve moving head sistemleri",
-      ],
-      image: "https://images.unsplash.com/photo-1760210885713-624a29a48633?w=1080",
-    },
-  ]);
+  /* ─── Anasayfa state ─── */
+  const [heroTitle, setHeroTitle] = useState(content.anasayfa.heroTitle);
+  const [heroDescription, setHeroDescription] = useState(content.anasayfa.heroDescription);
+  const [videoFileName, setVideoFileName] = useState<string | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const pendingVideoRef = useRef<File | null>(null);
 
-  // Referanslar state
-  const [projects, setProjects] = useState<Project[]>([
-    { client: "İstanbul Büyükşehir Belediyesi", project: "Taksim Meydanı LED Ekran Sistemi", year: "2024" },
-    { client: "Türk Telekom Arena", project: "Stadyum Ses ve Görüntü Sistemi", year: "2023" },
-    { client: "Ankara Kongre Merkezi", project: "Konferans Salonu Teknolojik Altyapı", year: "2024" },
-  ]);
+  /* ─── Hizmetler state ─── */
+  const [services, setServices] = useState<ServiceData[]>(content.hizmetler.services);
 
-  // Hakkımızda state
-  const [aboutContent, setAboutContent] = useState("2010 yılında kurulan DPI TEKNOLOJİ, görsel ve işitsel teknolojiler alanında Türkiye'nin önde gelen şirketlerinden biridir.");
+  /* ─── Referanslar state ─── */
+  const [projects, setProjects] = useState<ProjectData[]>(content.referanslar.projects);
 
-  // İletişim state
-  const [contactAddress, setContactAddress] = useState("Atatürk Mahallesi, Teknoloji Caddesi\nNo: 123, Kat: 4\nÇankaya / ANKARA");
-  const [contactPhone1, setContactPhone1] = useState("+90 (312) 123 45 67");
-  const [contactPhone2, setContactPhone2] = useState("+90 (312) 123 45 68");
-  const [contactEmail1, setContactEmail1] = useState("info@dpiteknoloji.com.tr");
-  const [contactEmail2, setContactEmail2] = useState("destek@dpiteknoloji.com.tr");
+  /* ─── Hakkımızda state ─── */
+  const [aboutContent, setAboutContent] = useState(content.hakkimizda.aboutText);
 
-  // Hesap state
+  /* ─── İletişim state ─── */
+  const [contactAddress, setContactAddress] = useState(content.iletisim.address);
+  const [contactPhone1, setContactPhone1] = useState(content.iletisim.phone1);
+  const [contactPhone2, setContactPhone2] = useState(content.iletisim.phone2);
+  const [contactEmail1, setContactEmail1] = useState(content.iletisim.email1);
+  const [contactEmail2, setContactEmail2] = useState(content.iletisim.email2);
+
+  /* ─── Sosyal Medya state ─── */
+  const [socialVis, setSocialVis] = useState<SocialVisibility>(content.socialVisibility);
+
+  /* ─── Hesap state ─── */
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -91,9 +58,63 @@ export function Admin() {
     navigate("/");
   };
 
+  /* ═══════ KAYDET HANDLERLERİ ═══════ */
+
   const handleSaveAnasayfa = () => {
-    alert("Ana sayfa içerikleri kaydedildi!");
+    // Video dosyası seçildiyse kaydet
+    if (pendingVideoRef.current) {
+      setHeroVideoFile(pendingVideoRef.current);
+      pendingVideoRef.current = null;
+    }
+    // Metin içeriklerini kaydet
+    updateAnasayfa({
+      heroTitle,
+      heroDescription,
+      heroVideoUrl: content.anasayfa.heroVideoUrl,
+    });
+    showToast("✓ Ana sayfa içerikleri kaydedildi!");
   };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      pendingVideoRef.current = file;
+      setVideoFileName(file.name);
+    }
+  };
+
+  const handleSaveHizmetler = () => {
+    updateHizmetler({ services });
+    showToast("✓ Hizmetler kaydedildi!");
+  };
+
+  const handleSaveReferanslar = () => {
+    updateReferanslar({ projects });
+    showToast("✓ Referanslar kaydedildi!");
+  };
+
+  const handleSaveHakkimizda = () => {
+    updateHakkimizda({ aboutText: aboutContent });
+    showToast("✓ Hakkımızda içerikleri kaydedildi!");
+  };
+
+  const handleSaveIletisim = () => {
+    updateIletisim({
+      address: contactAddress,
+      phone1: contactPhone1,
+      phone2: contactPhone2,
+      email1: contactEmail1,
+      email2: contactEmail2,
+    });
+    showToast("✓ İletişim bilgileri kaydedildi!");
+  };
+
+  const handleSaveSocial = () => {
+    updateSocialVisibility(socialVis);
+    showToast("✓ Sosyal medya ayarları kaydedildi!");
+  };
+
+  /* ═══════ HİZMET YARDIMCILARI ═══════ */
 
   const handleAddService = () => {
     setServices([
@@ -111,7 +132,7 @@ export function Admin() {
     setServices(services.filter((_, i) => i !== index));
   };
 
-  const handleServiceChange = (index: number, field: keyof Service, value: string) => {
+  const handleServiceChange = (index: number, field: keyof ServiceData, value: string) => {
     const newServices = [...services];
     newServices[index] = { ...newServices[index], [field]: value };
     setServices(newServices);
@@ -119,21 +140,32 @@ export function Admin() {
 
   const handleServiceFeatureChange = (serviceIndex: number, featureIndex: number, value: string) => {
     const newServices = [...services];
-    newServices[serviceIndex].features[featureIndex] = value;
+    newServices[serviceIndex] = {
+      ...newServices[serviceIndex],
+      features: newServices[serviceIndex].features.map((f, i) => (i === featureIndex ? value : f)),
+    };
     setServices(newServices);
   };
 
   const handleAddServiceFeature = (serviceIndex: number) => {
     const newServices = [...services];
-    newServices[serviceIndex].features.push("Yeni özellik");
+    newServices[serviceIndex] = {
+      ...newServices[serviceIndex],
+      features: [...newServices[serviceIndex].features, "Yeni özellik"],
+    };
     setServices(newServices);
   };
 
   const handleRemoveServiceFeature = (serviceIndex: number, featureIndex: number) => {
     const newServices = [...services];
-    newServices[serviceIndex].features = newServices[serviceIndex].features.filter((_, i) => i !== featureIndex);
+    newServices[serviceIndex] = {
+      ...newServices[serviceIndex],
+      features: newServices[serviceIndex].features.filter((_, i) => i !== featureIndex),
+    };
     setServices(newServices);
   };
+
+  /* ═══════ REFERANS YARDIMCILARI ═══════ */
 
   const handleAddProject = () => {
     setProjects([...projects, { client: "Yeni Müşteri", project: "Yeni Proje", year: "2024" }]);
@@ -143,33 +175,31 @@ export function Admin() {
     setProjects(projects.filter((_, i) => i !== index));
   };
 
-  const handleProjectChange = (index: number, field: keyof Project, value: string) => {
+  const handleProjectChange = (index: number, field: keyof ProjectData, value: string) => {
     const newProjects = [...projects];
     newProjects[index] = { ...newProjects[index], [field]: value };
     setProjects(newProjects);
   };
 
+  /* ═══════ ŞİFRE DEĞİŞTİRME ═══════ */
+
   const handleChangePassword = () => {
     setPasswordError("");
-
     if (!currentPassword || !newPassword || !confirmPassword) {
       setPasswordError("Tüm alanları doldurun");
       return;
     }
-
     if (newPassword !== confirmPassword) {
       setPasswordError("Yeni şifreler eşleşmiyor");
       return;
     }
-
     if (newPassword.length < 6) {
       setPasswordError("Yeni şifre en az 6 karakter olmalıdır");
       return;
     }
-
     const success = changePassword(currentPassword, newPassword);
     if (success) {
-      alert("Şifre başarıyla değiştirildi!");
+      showToast("✓ Şifre başarıyla değiştirildi!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -180,6 +210,26 @@ export function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-[72px]">
+      {/* Toast Bildirimi */}
+      {toast && (
+        <div
+          className="fixed top-6 right-6 z-[9999] px-6 py-4 rounded-xl shadow-2xl text-white text-[15px] font-medium animate-fade-in"
+          style={{
+            backgroundColor: "#12487c",
+            animation: "fadeInDown 0.3s ease-out",
+          }}
+        >
+          {toast}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
       {/* Header */}
       <div className="bg-white border-b shadow-sm">
         <div className="max-w-[1400px] mx-auto px-12 py-6">
@@ -219,6 +269,7 @@ export function Admin() {
               { key: "referanslar", label: "Referanslar" },
               { key: "hakkimizda", label: "Hakkımızda" },
               { key: "iletisim", label: "İletişim" },
+              { key: "sosyal", label: "Sosyal Medya" },
               { key: "hesap", label: "Hesap Ayarları" },
             ].map((tab) => (
               <button
@@ -244,7 +295,7 @@ export function Admin() {
 
       {/* Content */}
       <div className="max-w-[1400px] mx-auto px-12 py-12">
-        {/* Ana Sayfa */}
+        {/* ═══ Ana Sayfa ═══ */}
         {activeTab === "anasayfa" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <h2 className="text-[24px] mb-6" style={{ color: "#12487c" }}>
@@ -252,7 +303,7 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2">Hero Başlık</label>
+                <label className="block text-gray-700 mb-2 font-medium">Hero Başlık</label>
                 <input
                   type="text"
                   value={heroTitle}
@@ -262,7 +313,7 @@ export function Admin() {
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-2">Hero Açıklama</label>
+                <label className="block text-gray-700 mb-2 font-medium">Hero Açıklama</label>
                 <textarea
                   value={heroDescription}
                   onChange={(e) => setHeroDescription(e.target.value)}
@@ -272,20 +323,39 @@ export function Admin() {
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-2">Arka Plan Videosu</label>
-                <input
-                  type="file"
-                  accept="video/*"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                />
+                <label className="block text-gray-700 mb-2 font-medium">Arka Plan Videosu</label>
+                <div
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-[#12487c] transition-colors"
+                  onClick={() => videoInputRef.current?.click()}
+                >
+                  <input
+                    ref={videoInputRef}
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    className="hidden"
+                  />
+                  <svg className="w-10 h-10 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  {videoFileName ? (
+                    <p className="text-[15px] text-green-600 font-medium">
+                      ✓ Seçilen dosya: {videoFileName}
+                    </p>
+                  ) : (
+                    <p className="text-gray-500 text-[15px]">
+                      Video dosyası seçmek için tıklayın veya sürükleyin
+                    </p>
+                  )}
+                </div>
                 <p className="text-sm text-gray-500 mt-2">
-                  Mevcut video: led_ekran_aydınlatma.mp4
+                  Desteklenen formatlar: MP4, WebM, MOV • Maks. boyut: tarayıcı limiti
                 </p>
               </div>
 
               <button
                 onClick={handleSaveAnasayfa}
-                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
+                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
                 style={{ backgroundColor: "#12487c" }}
               >
                 Değişiklikleri Kaydet
@@ -294,7 +364,7 @@ export function Admin() {
           </div>
         )}
 
-        {/* Hizmetler */}
+        {/* ═══ Hizmetler ═══ */}
         {activeTab === "hizmetler" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <div className="flex items-center justify-between mb-6">
@@ -376,9 +446,7 @@ export function Admin() {
                             <input
                               type="text"
                               value={feature}
-                              onChange={(e) =>
-                                handleServiceFeatureChange(index, featureIndex, e.target.value)
-                              }
+                              onChange={(e) => handleServiceFeatureChange(index, featureIndex, e.target.value)}
                               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                             />
                             <button
@@ -398,8 +466,8 @@ export function Admin() {
 
             <div className="mt-6">
               <button
-                onClick={() => alert("Hizmetler kaydedildi!")}
-                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
+                onClick={handleSaveHizmetler}
+                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
                 style={{ backgroundColor: "#12487c" }}
               >
                 Tüm Değişiklikleri Kaydet
@@ -408,7 +476,7 @@ export function Admin() {
           </div>
         )}
 
-        {/* Referanslar */}
+        {/* ═══ Referanslar ═══ */}
         {activeTab === "referanslar" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <div className="flex items-center justify-between mb-6">
@@ -479,8 +547,8 @@ export function Admin() {
 
             <div className="mt-6">
               <button
-                onClick={() => alert("Referanslar kaydedildi!")}
-                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
+                onClick={handleSaveReferanslar}
+                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
                 style={{ backgroundColor: "#12487c" }}
               >
                 Tüm Değişiklikleri Kaydet
@@ -489,7 +557,7 @@ export function Admin() {
           </div>
         )}
 
-        {/* Hakkımızda */}
+        {/* ═══ Hakkımızda ═══ */}
         {activeTab === "hakkimizda" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <h2 className="text-[24px] mb-6" style={{ color: "#12487c" }}>
@@ -497,7 +565,7 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2">Şirket Tanıtımı</label>
+                <label className="block text-gray-700 mb-2 font-medium">Şirket Tanıtımı</label>
                 <textarea
                   value={aboutContent}
                   onChange={(e) => setAboutContent(e.target.value)}
@@ -506,19 +574,9 @@ export function Admin() {
                 />
               </div>
 
-              <div>
-                <label className="block text-gray-700 mb-2">Arka Plan Görseli</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                />
-                <p className="text-sm text-gray-500 mt-2">Mevcut görsel yüklü</p>
-              </div>
-
               <button
-                onClick={() => alert("Hakkımızda içerikleri kaydedildi!")}
-                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
+                onClick={handleSaveHakkimizda}
+                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
                 style={{ backgroundColor: "#12487c" }}
               >
                 Değişiklikleri Kaydet
@@ -527,7 +585,7 @@ export function Admin() {
           </div>
         )}
 
-        {/* İletişim */}
+        {/* ═══ İletişim ═══ */}
         {activeTab === "iletisim" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <h2 className="text-[24px] mb-6" style={{ color: "#12487c" }}>
@@ -535,7 +593,7 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2">Adres</label>
+                <label className="block text-gray-700 mb-2 font-medium">Adres</label>
                 <textarea
                   value={contactAddress}
                   onChange={(e) => setContactAddress(e.target.value)}
@@ -546,7 +604,7 @@ export function Admin() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-700 mb-2">Telefon 1</label>
+                  <label className="block text-gray-700 mb-2 font-medium">Telefon 1</label>
                   <input
                     type="text"
                     value={contactPhone1}
@@ -554,9 +612,8 @@ export function Admin() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-gray-700 mb-2">Telefon 2</label>
+                  <label className="block text-gray-700 mb-2 font-medium">Telefon 2</label>
                   <input
                     type="text"
                     value={contactPhone2}
@@ -568,7 +625,7 @@ export function Admin() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-700 mb-2">E-posta 1</label>
+                  <label className="block text-gray-700 mb-2 font-medium">E-posta 1</label>
                   <input
                     type="email"
                     value={contactEmail1}
@@ -576,9 +633,8 @@ export function Admin() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-gray-700 mb-2">E-posta 2</label>
+                  <label className="block text-gray-700 mb-2 font-medium">E-posta 2</label>
                   <input
                     type="email"
                     value={contactEmail2}
@@ -588,19 +644,9 @@ export function Admin() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-gray-700 mb-2">Arka Plan Görseli</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                />
-                <p className="text-sm text-gray-500 mt-2">Mevcut görsel yüklü</p>
-              </div>
-
               <button
-                onClick={() => alert("İletişim bilgileri kaydedildi!")}
-                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
+                onClick={handleSaveIletisim}
+                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
                 style={{ backgroundColor: "#12487c" }}
               >
                 Değişiklikleri Kaydet
@@ -609,7 +655,56 @@ export function Admin() {
           </div>
         )}
 
-        {/* Hesap Ayarları */}
+        {/* ═══ Sosyal Medya ═══ */}
+        {activeTab === "sosyal" && (
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            <h2 className="text-[24px] mb-2" style={{ color: "#12487c" }}>
+              Sosyal Medya Yönetimi
+            </h2>
+            <p className="text-gray-500 text-[15px] mb-8">
+              Hangi sosyal medya ikonlarının sitede görünür olacağını seçin.
+            </p>
+
+            <div className="space-y-4 max-w-[500px]">
+              {([
+                { key: "instagram" as const, label: "Instagram" },
+                { key: "linkedin" as const, label: "LinkedIn" },
+                { key: "facebook" as const, label: "Facebook" },
+                { key: "twitter" as const, label: "Twitter / X" },
+                { key: "youtube" as const, label: "YouTube" },
+              ]).map(({ key, label }) => (
+                <label
+                  key={key}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <span className="text-[15px] text-gray-700 font-medium">{label}</span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={socialVis[key]}
+                      onChange={(e) => setSocialVis({ ...socialVis, [key]: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-[#12487c] transition-colors" />
+                    <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-8">
+              <button
+                onClick={handleSaveSocial}
+                className="px-8 py-3 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+                style={{ backgroundColor: "#12487c" }}
+              >
+                Değişiklikleri Kaydet
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ Hesap Ayarları ═══ */}
         {activeTab === "hesap" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <h2 className="text-[24px] mb-6" style={{ color: "#12487c" }}>

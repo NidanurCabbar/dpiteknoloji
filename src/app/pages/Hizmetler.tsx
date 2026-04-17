@@ -2,6 +2,8 @@ import bgImage1 from "figma:asset/d232b19c71af91649f5efc3cab00edb595b0ac97.png";
 import bgImage2 from "figma:asset/dbccd831f72105a11b60c4651bcb363c51261a83.png";
 import bgImage3 from "figma:asset/b71c5f29786c8500e02ad3c397f7c4d0c404eb16.png";
 import bgImage4 from "figma:asset/6889dc6ba9f2c3f5c40b2c63aa751ed5e5c4732a.png";
+import { FadeIn } from "../components/FadeIn";
+import { TechPattern } from "../components/TechPattern";
 
 export function Hizmetler() {
   const services = [
@@ -60,12 +62,23 @@ export function Hizmetler() {
           <div className="w-1/4 h-full bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${bgImage4})` }} />
         </div>
         <div className="relative z-10 max-w-[1200px] mx-auto px-12 text-center">
-          <h1 className="text-[48px] mb-4" style={{ color: "#12487c" }}>
-            Hizmetlerimiz
-          </h1>
-          <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
-            Büyük ölçekli projeler için profesyonel teknoloji çözümleri
-          </p>
+          <FadeIn>
+            <p
+              className="text-[14px] font-semibold tracking-[3px] uppercase mb-4"
+              style={{ color: "var(--dpi-accent)" }}
+            >
+              Uzmanlık Alanlarımız
+            </p>
+            <h1
+              className="text-[48px] mb-4"
+              style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+            >
+              Hizmetlerimiz
+            </h1>
+            <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
+              Büyük ölçekli projeler için profesyonel teknoloji çözümleri
+            </p>
+          </FadeIn>
         </div>
       </section>
 
@@ -73,58 +86,96 @@ export function Hizmetler() {
       {services.map((service, index) => (
         <section
           key={index}
-          className={`py-24 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+          className={`relative py-24 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
         >
           <div className="max-w-[1200px] mx-auto px-12">
-            <div className={`grid grid-cols-2 gap-16 items-center ${index % 2 === 1 ? "direction-rtl" : ""}`}>
-              <div className={index % 2 === 1 ? "order-2" : ""}>
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-[500px] object-cover rounded-lg shadow-lg"
-                />
-              </div>
-              <div className={index % 2 === 1 ? "order-1" : ""}>
-                <h2 className="text-[36px] mb-6" style={{ color: "#12487c" }}>
-                  {service.title}
-                </h2>
-                <p className="text-gray-700 text-[16px] leading-relaxed mb-8">
-                  {service.description}
-                </p>
-                <div className="space-y-3">
-                  {service.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: "#12487c" }}>
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 text-[15px]">{feature}</span>
-                    </div>
-                  ))}
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${index % 2 === 1 ? "direction-rtl" : ""}`}>
+              <FadeIn direction={index % 2 === 0 ? "left" : "right"}>
+                <div className={index % 2 === 1 ? "order-2" : ""}>
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-[500px] object-cover rounded-xl shadow-lg"
+                  />
                 </div>
-              </div>
+              </FadeIn>
+              <FadeIn direction={index % 2 === 0 ? "right" : "left"} delay={0.15}>
+                <div className={index % 2 === 1 ? "order-1" : ""}>
+                  <h2
+                    className="text-[36px] mb-6"
+                    style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+                  >
+                    {service.title}
+                  </h2>
+                  <p className="text-gray-700 text-[16px] leading-relaxed mb-8">
+                    {service.description}
+                  </p>
+                  <div className="space-y-3">
+                    {service.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-start gap-3">
+                        <div
+                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                          style={{ backgroundColor: "var(--dpi-accent)" }}
+                        >
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span className="text-gray-700 text-[15px]">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </FadeIn>
             </div>
           </div>
         </section>
       ))}
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br" style={{ background: "linear-gradient(135deg, #12487c 0%, #0a2f52 100%)" }}>
-        <div className="max-w-[1200px] mx-auto px-12 text-center">
-          <h2 className="text-[42px] text-white mb-6">
-            Projeniz için Teknik Danışmanlık
-          </h2>
-          <p className="text-white/90 text-[18px] mb-10 max-w-[700px] mx-auto">
-            Deneyimli ekibimiz, projenizin ihtiyaçlarını analiz ederek size özel çözümler sunar
-          </p>
-          <a
-            href="/iletisim"
-            className="inline-block bg-white text-[16px] px-10 py-4 rounded-lg hover:bg-gray-100 transition-colors"
-            style={{ color: "#12487c" }}
-          >
-            İletişime Geçin
-          </a>
+      <section
+        className="relative py-24 overflow-hidden"
+        style={{ background: "linear-gradient(135deg, var(--dpi-blue) 0%, var(--dpi-blue-dark) 100%)" }}
+      >
+        <TechPattern variant="dark" />
+        <div className="relative max-w-[1200px] mx-auto px-12 text-center">
+          <FadeIn>
+            <h2
+              className="text-[42px] text-white mb-6"
+              style={{ fontFamily: "var(--font-family-heading)" }}
+            >
+              Projeniz için <span style={{ color: "var(--dpi-accent-light)" }}>Teknik Danışmanlık</span>
+            </h2>
+            <p className="text-white/80 text-[18px] mb-10 max-w-[700px] mx-auto">
+              Deneyimli ekibimiz, projenizin ihtiyaçlarını analiz ederek size özel çözümler sunar
+            </p>
+            <a
+              href="/iletisim"
+              style={{
+                display: "inline-block",
+                backgroundColor: "var(--dpi-accent)",
+                color: "#ffffff",
+                fontFamily: "var(--font-family-heading)",
+                fontWeight: 600,
+                fontSize: 16,
+                padding: "14px 36px",
+                borderRadius: 8,
+                textDecoration: "none",
+                boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
+                transition: "transform 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(232,134,12,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
+              }}
+            >
+              İletişime Geçin
+            </a>
+          </FadeIn>
         </div>
       </section>
     </div>

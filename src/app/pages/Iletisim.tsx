@@ -1,5 +1,7 @@
 import { useState } from "react";
 import bgImage from "figma:asset/ed053a64549a21b8e2a9e3260dcdb7a6c82d99f3.png";
+import { FadeIn } from "../components/FadeIn";
+import { TechPattern } from "../components/TechPattern";
 
 export function Iletisim() {
   const [formData, setFormData] = useState({
@@ -35,22 +37,37 @@ export function Iletisim() {
         />
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50/30 to-white/30" />
         <div className="relative z-10 max-w-[1200px] mx-auto px-12 text-center">
-          <h1 className="text-[48px] mb-4" style={{ color: "#12487c" }}>
-            İletişim
-          </h1>
-          <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
-            Projeleriniz için bizimle iletişime geçin
-          </p>
+          <FadeIn>
+            <p
+              className="text-[14px] font-semibold tracking-[3px] uppercase mb-4"
+              style={{ color: "var(--dpi-accent)" }}
+            >
+              Bize Ulaşın
+            </p>
+            <h1
+              className="text-[48px] mb-4"
+              style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+            >
+              İletişim
+            </h1>
+            <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
+              Projeleriniz için bizimle iletişime geçin
+            </p>
+          </FadeIn>
         </div>
       </section>
 
       {/* Contact Form & Info */}
       <section className="py-24 bg-white">
         <div className="max-w-[1200px] mx-auto px-12">
-          <div className="grid grid-cols-2 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}
+            <FadeIn direction="left">
             <div>
-              <h2 className="text-[32px] mb-8" style={{ color: "#12487c" }}>
+              <h2
+                className="text-[32px] mb-8"
+                style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+              >
                 Bize Ulaşın
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -111,17 +128,35 @@ export function Iletisim() {
 
                 <button
                   type="submit"
-                  className="w-full text-white py-4 rounded-lg hover:opacity-90 transition-opacity text-[16px]"
-                  style={{ backgroundColor: "#12487c" }}
+                  className="w-full text-white py-4 rounded-lg transition-all text-[16px]"
+                  style={{
+                    backgroundColor: "var(--dpi-accent)",
+                    fontFamily: "var(--font-family-heading)",
+                    fontWeight: 600,
+                    boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(232,134,12,0.4)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
+                  }}
                 >
                   Gönder
                 </button>
               </form>
             </div>
+            </FadeIn>
 
             {/* Contact Info */}
+            <FadeIn direction="right" delay={0.15}>
             <div>
-              <h2 className="text-[32px] mb-8" style={{ color: "#12487c" }}>
+              <h2
+                className="text-[32px] mb-8"
+                style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+              >
                 İletişim Bilgileri
               </h2>
 
@@ -193,6 +228,7 @@ export function Iletisim() {
                 </div>
               </div>
             </div>
+            </FadeIn>
           </div>
         </div>
       </section>

@@ -1,178 +1,196 @@
-export function Referanslar() {
-  const projects = [
-    {
-      client: "İstanbul Büyükşehir Belediyesi",
-      project: "Taksim Meydanı LED Ekran Sistemi",
-      year: "2024",
-    },
-    {
-      client: "Türk Telekom Arena",
-      project: "Stadyum Ses ve Görüntü Sistemi",
-      year: "2023",
-    },
-    {
-      client: "Ankara Kongre Merkezi",
-      project: "Konferans Salonu Teknolojik Altyapı",
-      year: "2024",
-    },
-    {
-      client: "İzmir Fuar Alanı",
-      project: "Açık Hava Etkinlik Ses Sistemi",
-      year: "2023",
-    },
-    {
-      client: "Zorlu Center PSM",
-      project: "Tiyatro ve Konser Salonu Işıklandırma",
-      year: "2022",
-    },
-    {
-      client: "Antalya EXPO 2016",
-      project: "Dev LED Ekran ve Ses Altyapısı",
-      year: "2023",
-    },
-    {
-      client: "Vodafone Park",
-      project: "Stadyum LED Ekran Modernizasyonu",
-      year: "2024",
-    },
-    {
-      client: "Atatürk Havalimanı",
-      project: "Terminal Bilgilendirme Ekranları",
-      year: "2022",
-    },
-    {
-      client: "Ankara Sanat Tiyatrosu",
-      project: "Sahne Işık ve Ses Sistemi",
-      year: "2023",
-    },
-  ];
+import { FadeIn } from "../components/FadeIn";
+import { TechPattern } from "../components/TechPattern";
 
-  const clients = [
-    "İstanbul Büyükşehir Belediyesi",
-    "Ankara Büyükşehir Belediyesi",
-    "İzmir Büyükşehir Belediyesi",
-    "Türk Telekom",
-    "Vodafone",
-    "Turkcell",
-    "Zorlu Holding",
-    "AVM Yönetim A.Ş.",
-    "Kültür ve Turizm Bakanlığı",
-    "Spor Toto Teşkilatı",
-    "THY",
-    "Garanti BBVA",
+interface Reference {
+  client: string;
+  project: string;
+  logo?: string;
+}
+
+export function Referanslar() {
+  const references: Reference[] = [
+    {
+      client: "Konya Belediyesi",
+      project: "Kurumsal teknoloji çözümleri",
+    },
+    {
+      client: "Devlet Su İşleri Vakfı",
+      project: "Kurumsal teknoloji çözümleri",
+    },
+    {
+      client: "İstanbul Esenyurt Belediyesi",
+      project: "Kurumsal teknoloji çözümleri",
+    },
+    {
+      client: "TCDD",
+      project: "Kurumsal teknoloji çözümleri",
+    },
   ];
 
   return (
     <div className="pt-[72px]">
       {/* Hero */}
       <section className="relative h-[400px] flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
-        <div className="max-w-[1200px] mx-auto px-12 text-center">
-          <h1 className="text-[48px] mb-4" style={{ color: "#12487c" }}>
-            Referanslarımız
-          </h1>
-          <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
-            500'den fazla başarılı proje ile sektörde fark yaratan çalışmalarımız
-          </p>
-        </div>
-      </section>
-
-      {/* Featured Projects */}
-      <section className="py-24 bg-white">
-        <div className="max-w-[1200px] mx-auto px-12">
-          <h2 className="text-[36px] text-center mb-16" style={{ color: "#12487c" }}>
-            Öne Çıkan Projelerimiz
-          </h2>
-          <div className="grid grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: "#12487c" }}>
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-[20px] mb-2" style={{ color: "#12487c" }}>
-                  {project.client}
-                </h3>
-                <p className="text-gray-700 text-[15px] mb-3 leading-relaxed">
-                  {project.project}
-                </p>
-                <span className="inline-block text-[13px] text-gray-500 bg-gray-100 px-3 py-1 rounded">
-                  {project.year}
-                </span>
-              </div>
-            ))}
-          </div>
+        <TechPattern variant="light" />
+        <div className="relative max-w-[1200px] mx-auto px-12 text-center">
+          <FadeIn>
+            <p
+              className="text-[14px] font-semibold tracking-[3px] uppercase mb-4"
+              style={{ color: "var(--dpi-accent)" }}
+            >
+              Projelerimiz
+            </p>
+            <h1
+              className="text-[48px] mb-4"
+              style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+            >
+              Referanslarımız
+            </h1>
+            <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
+              Kamu kurumları ve büyük ölçekli kuruluşlar için sunduğumuz kurumsal çözümler
+            </p>
+          </FadeIn>
         </div>
       </section>
 
       {/* Client Logos */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-white">
         <div className="max-w-[1200px] mx-auto px-12">
-          <h2 className="text-[36px] text-center mb-16" style={{ color: "#12487c" }}>
-            Çözüm Ortağı Olduğumuz Kurumlar
-          </h2>
-          <div className="grid grid-cols-4 gap-8">
-            {clients.map((client, index) => (
+          <FadeIn>
+            <p
+              className="text-center text-[14px] font-semibold tracking-[3px] uppercase mb-3"
+              style={{ color: "var(--dpi-accent)" }}
+            >
+              Güvenilir İş Birlikleri
+            </p>
+            <h2
+              className="text-[36px] text-center mb-4"
+              style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+            >
+              Çözüm Ortağı Olduğumuz Kurumlar
+            </h2>
+            <p className="text-gray-500 text-[16px] text-center mb-16 max-w-[700px] mx-auto">
+              Kamu ve kurumsal projelerde referans gösterilen çözümler üretiyoruz.
+            </p>
+          </FadeIn>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {references.map((ref, index) => (
+              <FadeIn key={index} delay={index * 0.1}>
               <div
-                key={index}
-                className="bg-white rounded-lg shadow-sm p-8 flex items-center justify-center h-32 hover:shadow-md transition-shadow"
+                className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[220px]"
               >
-                <span className="text-[16px] text-gray-700 text-center">{client}</span>
+                {/* Logo alanı - logo eklendiğinde burada görünecek */}
+                <div className="w-full h-20 flex items-center justify-center mb-4">
+                  {ref.logo ? (
+                    <img
+                      src={ref.logo}
+                      alt={ref.client}
+                      className="max-h-20 max-w-full object-contain"
+                    />
+                  ) : (
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: "#12487c" }}
+                    >
+                      <svg
+                        className="w-8 h-8 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <h3
+                  className="text-[17px] leading-snug"
+                  style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+                >
+                  {ref.client}
+                </h3>
+                <p className="text-gray-500 text-[13px] mt-2">{ref.project}</p>
               </div>
+              </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-white">
-        <div className="max-w-[1200px] mx-auto px-12">
-          <h2 className="text-[36px] text-center mb-16" style={{ color: "#12487c" }}>
-            Müşteri Görüşleri
-          </h2>
-          <div className="grid grid-cols-2 gap-12">
-            <div className="bg-gray-50 rounded-lg p-10">
-              <div className="text-[32px] mb-4" style={{ color: "#12487c" }}>
-                "
-              </div>
-              <p className="text-gray-700 text-[16px] leading-relaxed mb-6 italic">
-                DPI TEKNOLOJİ ile çalışmak büyük bir keyifti. Stadyumumuz için kurdukları LED ekran
-                sistemi hem görsel kalitesi hem de dayanıklılığı ile beklentilerimizi aştı. Teknik
-                ekipleri son derece profesyonel ve çözüm odaklı.
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "#12487c" }}>
-                  <span className="text-white text-[18px]">TT</span>
+      {/* Neden Biz */}
+      <section
+        className="relative py-24 overflow-hidden"
+        style={{ background: "linear-gradient(135deg, var(--dpi-blue) 0%, var(--dpi-blue-dark) 100%)" }}
+      >
+        <TechPattern variant="dark" />
+        <div className="relative max-w-[1200px] mx-auto px-12">
+          <FadeIn>
+            <p
+              className="text-center text-[14px] font-semibold tracking-[3px] uppercase mb-3"
+              style={{ color: "var(--dpi-accent-light)" }}
+            >
+              Neden DPI Teknoloji
+            </p>
+            <h2
+              className="text-[36px] text-center text-white mb-16"
+              style={{ fontFamily: "var(--font-family-heading)" }}
+            >
+              Farkımız
+            </h2>
+          </FadeIn>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Uçtan Uca Hizmet",
+                desc: "İhtiyaç analizi, tasarım, kurulum ve satış sonrası destek — tüm süreçler tek çatı altında.",
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Kamu Deneyimi",
+                desc: "Belediyeler, kamu kurumları ve büyük ölçekli kuruluşlarla kanıtlanmış proje tecrübesi.",
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                ),
+              },
+              {
+                title: "7/24 Teknik Destek",
+                desc: "Proje teslimi sonrasında da kesintisiz teknik destek ve bakım hizmeti.",
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ),
+              },
+            ].map((item, i) => (
+              <FadeIn key={i} delay={i * 0.12}>
+                <div className="text-center">
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 text-white"
+                    style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+                  >
+                    {item.icon}
+                  </div>
+                  <h3
+                    className="text-[18px] text-white mb-2"
+                    style={{ fontFamily: "var(--font-family-heading)" }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p className="text-white/70 text-[14px] leading-relaxed">{item.desc}</p>
                 </div>
-                <div>
-                  <p className="text-gray-800">Teknik Müdür</p>
-                  <p className="text-gray-500 text-[14px]">Türk Telekom Arena</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-10">
-              <div className="text-[32px] mb-4" style={{ color: "#12487c" }}>
-                "
-              </div>
-              <p className="text-gray-700 text-[16px] leading-relaxed mb-6 italic">
-                Konferans merkezimiz için ihtiyaç duyduğumuz ses ve görüntü altyapısını kusursuz bir
-                şekilde kurdular. Proje yönetimi ve zaman planlaması mükemmeldi. Kesinlikle tavsiye
-                ediyoruz.
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "#12487c" }}>
-                  <span className="text-white text-[18px]">AK</span>
-                </div>
-                <div>
-                  <p className="text-gray-800">Genel Koordinatör</p>
-                  <p className="text-gray-500 text-[14px]">Ankara Kongre Merkezi</p>
-                </div>
-              </div>
-            </div>
+              </FadeIn>
+            ))}
           </div>
         </div>
       </section>

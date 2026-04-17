@@ -20,8 +20,8 @@ export function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/50 backdrop-blur-md shadow-sm z-50">
-      <div className="max-w-[1440px] mx-auto px-12 h-[72px] flex items-center justify-between">
+    <nav className="fixed top-[48px] left-0 right-0 bg-white/50 backdrop-blur-md shadow-sm z-50">
+      <div className="w-full pl-6 pr-8 h-[72px] flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <span className="flex items-center gap-3">
             <img src={logo} alt="DPI TEKNOLOJİ Logo" className="h-[56px]" />
