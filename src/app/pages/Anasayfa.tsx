@@ -1,5 +1,4 @@
 import { ServiceCard } from "../components/ServiceCard";
-import { CountUp } from "../components/CountUp";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useRef, useEffect } from "react";
@@ -126,33 +125,6 @@ export function Anasayfa() {
               ))}
             </div>
           </FadeIn>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="relative py-24 overflow-hidden" style={{ backgroundColor: "var(--dpi-blue)" }}>
-        <TechPattern variant="dark" />
-        <div className="relative max-w-[1200px] mx-auto px-12">
-          <FadeIn>
-            <p
-              className="text-center text-[14px] font-semibold tracking-[3px] uppercase mb-3"
-              style={{ color: "var(--dpi-accent-light)" }}
-            >
-              Rakamlarla DPI
-            </p>
-            <h2
-              className="text-[36px] text-center text-white mb-16"
-              style={{ fontFamily: "var(--font-family-heading)" }}
-            >
-              Güvenin Somut Kanıtları
-            </h2>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <CountUp end={500} suffix="+" label="Tamamlanan Proje" />
-            <CountUp end={15} suffix="+" label="Yıllık Deneyim" />
-            <CountUp end={200} suffix="+" label="Kurumsal Müşteri" />
-          </div>
         </div>
       </section>
 
