@@ -718,7 +718,7 @@ export function Admin() {
                   </svg>
                   <div>
                     <p className="text-sm text-gray-700">
-                      <strong>E-posta:</strong> admin_s@gmail.com
+                      <strong>E-posta:</strong> info@dpiteknoloji.com.tr
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
                       Güvenliğiniz için şifrenizi düzenli olarak değiştirin

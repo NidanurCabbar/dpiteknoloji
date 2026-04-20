@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (email: string, password: string) => {
-    if (email === "admin_s@gmail.com" && password === adminPassword) {
+    if (email === "info@dpiteknoloji.com.tr" && password === adminPassword) {
       setIsAuthenticated(true);
       setIsAdmin(true);
       localStorage.setItem("admin_session", "true");
