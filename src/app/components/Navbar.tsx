@@ -1,15 +1,17 @@
 import { Link, useLocation } from "react-router";
 import logo from "figma:asset/ebfd5b8d0e238183642c1f03544a20072e4c3aa3.png";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function Navbar() {
   const location = useLocation();
+  const { lang, setLang, t } = useLanguage();
 
   const menuItems = [
-    { path: "/", label: "ANASAYFA" },
-    { path: "/hakkimizda", label: "HAKKIMIZDA" },
-    { path: "/hizmetler", label: "HİZMETLER" },
-    { path: "/referanslar", label: "REFERANSLAR" },
-    { path: "/iletisim", label: "İLETİŞİM" },
+    { path: "/", labelKey: "nav.home" },
+    { path: "/hakkimizda", labelKey: "nav.about" },
+    { path: "/hizmetler", labelKey: "nav.services" },
+    { path: "/referanslar", labelKey: "nav.references" },
+    { path: "/iletisim", labelKey: "nav.contact" },
   ];
 
   const isActive = (path: string) => {
@@ -18,6 +20,24 @@ export function Navbar() {
     }
     return location.pathname.startsWith(path);
   };
+
+  const langBtnStyle = (active: boolean): React.CSSProperties => ({
+    width: 28,
+    height: 28,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: 0.5,
+    borderRadius: 4,
+    border: `1px solid ${active ? "#12487c" : "#d1d5db"}`,
+    backgroundColor: active ? "#12487c" : "transparent",
+    color: active ? "#ffffff" : "#4b5563",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontFamily: "var(--font-family-heading)",
+  });
 
   return (
     <nav className="fixed top-[48px] left-0 right-0 bg-white/50 backdrop-blur-md shadow-sm z-50">
@@ -43,7 +63,7 @@ export function Navbar() {
                     color: isActive(item.path) ? "#12487c" : "#333333",
                   }}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </span>
 
                 {/* Mavi yazı - alttan gelir */}
@@ -51,7 +71,7 @@ export function Navbar() {
                   className="text-[15px] tracking-wide font-medium block absolute top-full left-0"
                   style={{ color: "#12487c" }}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </span>
               </div>
 
@@ -64,6 +84,52 @@ export function Navbar() {
               )}
             </Link>
           ))}
+
+          {/* Dil seçici — yan yana iki küçük kare buton */}
+          <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 8 }}>
+            <button
+              type="button"
+              onClick={() => setLang("en")}
+              aria-label="Switch to English"
+              aria-pressed={lang === "en"}
+              style={langBtnStyle(lang === "en")}
+              onMouseEnter={(e) => {
+                if (lang !== "en") {
+                  e.currentTarget.style.borderColor = "#12487c";
+                  e.currentTarget.style.color = "#12487c";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (lang !== "en") {
+                  e.currentTarget.style.borderColor = "#d1d5db";
+                  e.currentTarget.style.color = "#4b5563";
+                }
+              }}
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang("tr")}
+              aria-label="Türkçeye geç"
+              aria-pressed={lang === "tr"}
+              style={langBtnStyle(lang === "tr")}
+              onMouseEnter={(e) => {
+                if (lang !== "tr") {
+                  e.currentTarget.style.borderColor = "#12487c";
+                  e.currentTarget.style.color = "#12487c";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (lang !== "tr") {
+                  e.currentTarget.style.borderColor = "#d1d5db";
+                  e.currentTarget.style.color = "#4b5563";
+                }
+              }}
+            >
+              TR
+            </button>
+          </div>
         </div>
       </div>
     </nav>

@@ -1,5 +1,6 @@
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface Reference {
   client: string;
@@ -8,23 +9,13 @@ interface Reference {
 }
 
 export function Referanslar() {
+  const { t } = useLanguage();
+
   const references: Reference[] = [
-    {
-      client: "Konya Belediyesi",
-      project: "Kurumsal teknoloji çözümleri",
-    },
-    {
-      client: "Devlet Su İşleri Vakfı",
-      project: "Kurumsal teknoloji çözümleri",
-    },
-    {
-      client: "İstanbul Esenyurt Belediyesi",
-      project: "Kurumsal teknoloji çözümleri",
-    },
-    {
-      client: "TCDD",
-      project: "Kurumsal teknoloji çözümleri",
-    },
+    { client: t("refs.client.konya"), project: t("refs.project.default") },
+    { client: t("refs.client.dsi"), project: t("refs.project.default") },
+    { client: t("refs.client.esenyurt"), project: t("refs.project.default") },
+    { client: t("refs.client.tcdd"), project: t("refs.project.default") },
   ];
 
   return (
@@ -38,16 +29,16 @@ export function Referanslar() {
               className="text-[14px] font-semibold tracking-[3px] uppercase mb-4"
               style={{ color: "var(--dpi-accent)" }}
             >
-              Projelerimiz
+              {t("refs.hero.kicker")}
             </p>
             <h1
               className="text-[48px] mb-4"
               style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
             >
-              Referanslarımız
+              {t("refs.hero.title")}
             </h1>
             <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
-              Kamu kurumları ve büyük ölçekli kuruluşlar için sunduğumuz kurumsal çözümler
+              {t("refs.hero.subtitle")}
             </p>
           </FadeIn>
         </div>
@@ -61,61 +52,60 @@ export function Referanslar() {
               className="text-center text-[14px] font-semibold tracking-[3px] uppercase mb-3"
               style={{ color: "var(--dpi-accent)" }}
             >
-              Güvenilir İş Birlikleri
+              {t("refs.section.kicker")}
             </p>
             <h2
               className="text-[36px] text-center mb-4"
               style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
             >
-              Çözüm Ortağı Olduğumuz Kurumlar
+              {t("refs.section.title")}
             </h2>
             <p className="text-gray-500 text-[16px] text-center mb-16 max-w-[700px] mx-auto">
-              Kamu ve kurumsal projelerde referans gösterilen çözümler üretiyoruz.
+              {t("refs.section.subtitle")}
             </p>
           </FadeIn>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {references.map((ref, index) => (
               <FadeIn key={index} delay={index * 0.1}>
-              <div
-                className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[220px]"
-              >
-                {/* Logo alanı - logo eklendiğinde burada görünecek */}
-                <div className="w-full h-20 flex items-center justify-center mb-4">
-                  {ref.logo ? (
-                    <img
-                      src={ref.logo}
-                      alt={ref.client}
-                      className="max-h-20 max-w-full object-contain"
-                    />
-                  ) : (
-                    <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: "#12487c" }}
-                    >
-                      <svg
-                        className="w-8 h-8 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <h3
-                  className="text-[17px] leading-snug"
-                  style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+                <div
+                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[220px]"
                 >
-                  {ref.client}
-                </h3>
-                <p className="text-gray-500 text-[13px] mt-2">{ref.project}</p>
-              </div>
+                  <div className="w-full h-20 flex items-center justify-center mb-4">
+                    {ref.logo ? (
+                      <img
+                        src={ref.logo}
+                        alt={ref.client}
+                        className="max-h-20 max-w-full object-contain"
+                      />
+                    ) : (
+                      <div
+                        className="w-16 h-16 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: "#12487c" }}
+                      >
+                        <svg
+                          className="w-8 h-8 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <h3
+                    className="text-[17px] leading-snug"
+                    style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+                  >
+                    {ref.client}
+                  </h3>
+                  <p className="text-gray-500 text-[13px] mt-2">{ref.project}</p>
+                </div>
               </FadeIn>
             ))}
           </div>
@@ -134,20 +124,20 @@ export function Referanslar() {
               className="text-center text-[14px] font-semibold tracking-[3px] uppercase mb-3"
               style={{ color: "var(--dpi-accent-light)" }}
             >
-              Neden DPI Teknoloji
+              {t("refs.why.kicker")}
             </p>
             <h2
               className="text-[36px] text-center text-white mb-16"
               style={{ fontFamily: "var(--font-family-heading)" }}
             >
-              Farkımız
+              {t("refs.why.title")}
             </h2>
           </FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: "Uçtan Uca Hizmet",
-                desc: "İhtiyaç analizi, tasarım, kurulum ve satış sonrası destek — tüm süreçler tek çatı altında.",
+                title: t("refs.why.c1.title"),
+                desc: t("refs.why.c1.desc"),
                 icon: (
                   <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
@@ -155,8 +145,8 @@ export function Referanslar() {
                 ),
               },
               {
-                title: "Kamu Deneyimi",
-                desc: "Belediyeler, kamu kurumları ve büyük ölçekli kuruluşlarla kanıtlanmış proje tecrübesi.",
+                title: t("refs.why.c2.title"),
+                desc: t("refs.why.c2.desc"),
                 icon: (
                   <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -164,8 +154,8 @@ export function Referanslar() {
                 ),
               },
               {
-                title: "7/24 Teknik Destek",
-                desc: "Proje teslimi sonrasında da kesintisiz teknik destek ve bakım hizmeti.",
+                title: t("refs.why.c3.title"),
+                desc: t("refs.why.c3.desc"),
                 icon: (
                   <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />

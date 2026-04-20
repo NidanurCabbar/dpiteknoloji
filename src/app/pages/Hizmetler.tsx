@@ -4,50 +4,53 @@ import bgImage3 from "figma:asset/b71c5f29786c8500e02ad3c397f7c4d0c404eb16.png";
 import bgImage4 from "figma:asset/6889dc6ba9f2c3f5c40b2c63aa751ed5e5c4732a.png";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function Hizmetler() {
+  const { t } = useLanguage();
+
   const services = [
     {
-      title: "Profesyonel Led Ekran Sistemleri",
-      image: "https://images.unsplash.com/photo-1575719028439-65ce8662c1cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwzfHxsYXJnZSUyMExFRCUyMHNjcmVlbiUyMGRpc3BsYXklMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc3NTU2NjkzOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      title: t("services.s1.title"),
+      image:
+        "https://images.unsplash.com/photo-1575719028439-65ce8662c1cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwzfHxsYXJnZSUyMExFRCUyMHNjcmVlbiUyMGRpc3BsYXklMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc3NTU2NjkzOHww&ixlib=rb-4.1.0&q=80&w=1080",
       features: [
-        "İç ve dış mekan LED ekran kurulumu",
-        "Stadyum ve arena LED sistemleri",
-        "Reklam ve bilgilendirme ekranları",
-        "Yüksek çözünürlüklü video wall sistemleri",
-        "Mobil LED ekran çözümleri",
-        "7/24 teknik destek ve bakım hizmeti",
+        t("services.s1.f1"),
+        t("services.s1.f2"),
+        t("services.s1.f3"),
+        t("services.s1.f4"),
+        t("services.s1.f5"),
+        t("services.s1.f6"),
       ],
-      description:
-        "En son teknoloji LED ekran sistemleri ile etkinliklerinize, mekanlarınıza ve projelerinize görsel mükemmellik katıyoruz. Yüksek parlaklık değerleri, geniş görüş açıları ve uzun ömürlü yapısıyla profesyonel LED çözümlerimiz, her türlü ihtiyaca cevap verir.",
+      description: t("services.s1.description"),
     },
     {
-      title: "Profesyonel Ses, Işık ve Görüntü Sistemi",
-      image: "https://images.unsplash.com/photo-1773625545016-d575264483e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhdWRpbyUyMHNvdW5kJTIwc3lzdGVtJTIwY29uY2VydHxlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      title: t("services.s2.title"),
+      image:
+        "https://images.unsplash.com/photo-1773625545016-d575264483e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhdWRpbyUyMHNvdW5kJTIwc3lzdGVtJTIwY29uY2VydHxlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       features: [
-        "Konser ve etkinlik ses sistemleri",
-        "Konferans salonu akustiği",
-        "Line array ve point source hoparlör sistemleri",
-        "Dijital mikser ve ses işleme teknolojileri",
-        "Kablosuz mikrofon sistemleri",
-        "Akustik analiz ve optimizasyon",
+        t("services.s2.f1"),
+        t("services.s2.f2"),
+        t("services.s2.f3"),
+        t("services.s2.f4"),
+        t("services.s2.f5"),
+        t("services.s2.f6"),
       ],
-      description:
-        "Konserlerden konferanslara, tiyatro sahnesinden açık hava etkinliklerine kadar her ortam için özel tasarlanmış profesyonel ses çözümleri sunuyoruz. Kristal netliğinde ses kalitesi ve mükemmel akustik performans için son teknoloji ekipmanlar kullanıyoruz.",
+      description: t("services.s2.description"),
     },
     {
-      title: "Zayıf Akım Sistemleri",
-      image: "https://images.unsplash.com/photo-1760210885713-624a29a48633?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxhcmNoaXRlY3R1cmFsJTIwbGlnaHRpbmclMjBkZXNpZ24lMjBidWlsZGluZ3xlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      title: t("services.s3.title"),
+      image:
+        "https://images.unsplash.com/photo-1760210885713-624a29a48633?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxhcmNoaXRlY3R1cmFsJTIwbGlnaHRpbmclMjBkZXNpZ24lMjBidWlsZGluZ3xlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       features: [
-        "Mimari cephe aydınlatması",
-        "Sahne ve etkinlik ışıklandırması",
-        "LED ve moving head sistemleri",
-        "DMX kontrol ve programlama",
-        "Dekoratif ve ambient aydınlatma",
-        "Enerji verimli ışık çözümleri",
+        t("services.s3.f1"),
+        t("services.s3.f2"),
+        t("services.s3.f3"),
+        t("services.s3.f4"),
+        t("services.s3.f5"),
+        t("services.s3.f6"),
       ],
-      description:
-        "Işıklandırma sistemlerimiz ile mekanlarınızı dönüştürüyor, etkinliklerinize görsel derinlik katıyoruz. Mimari projelerden sahne performanslarına kadar geniş yelpazede ışık tasarımı ve uygulama hizmeti veriyoruz.",
+      description: t("services.s3.description"),
     },
   ];
 
@@ -67,16 +70,16 @@ export function Hizmetler() {
               className="text-[14px] font-semibold tracking-[3px] uppercase mb-4"
               style={{ color: "var(--dpi-accent)" }}
             >
-              Uzmanlık Alanlarımız
+              {t("services.hero.kicker")}
             </p>
             <h1
               className="text-[48px] mb-4"
               style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
             >
-              Hizmetlerimiz
+              {t("services.hero.title")}
             </h1>
             <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
-              Büyük ölçekli projeler için profesyonel teknoloji çözümleri
+              {t("services.hero.subtitle")}
             </p>
           </FadeIn>
         </div>
@@ -156,7 +159,7 @@ export function Hizmetler() {
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <polyline points="14 2 14 8 20 8" />
                     </svg>
-                    Teklif Al
+                    {t("services.cta.getQuote")}
                   </a>
                 </div>
               </FadeIn>
@@ -177,10 +180,12 @@ export function Hizmetler() {
               className="text-[42px] text-white mb-6"
               style={{ fontFamily: "var(--font-family-heading)" }}
             >
-              Projeniz için <span style={{ color: "var(--dpi-accent-light)" }}>Teknik Danışmanlık</span>
+              {t("home.cta.titleBefore")}
+              <span style={{ color: "var(--dpi-accent-light)" }}>{t("home.cta.titleAccent")}</span>
+              {t("home.cta.titleAfter")}
             </h2>
             <p className="text-white/80 text-[18px] mb-10 max-w-[700px] mx-auto">
-              Deneyimli ekibimiz, projenizin ihtiyaçlarını analiz ederek size özel çözümler sunar
+              {t("home.cta.description")}
             </p>
             <a
               href="/iletisim"
@@ -206,7 +211,7 @@ export function Hizmetler() {
                 e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
               }}
             >
-              İletişime Geçin
+              {t("home.cta.button")}
             </a>
           </FadeIn>
         </div>

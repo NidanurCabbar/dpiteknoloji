@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { useSiteContent } from "../contexts/SiteContentContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const brandColors: Record<string, string> = {
   facebook: "#1877F2",
@@ -14,19 +15,20 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
+  const { t } = useLanguage();
 
   const quickLinks = [
-    { label: "Anasayfa", path: "/" },
-    { label: "Hakkımızda", path: "/hakkimizda" },
-    { label: "Hizmetler", path: "/hizmetler" },
-    { label: "Referanslar", path: "/referanslar" },
-    { label: "İletişim", path: "/iletisim" },
+    { labelKey: "nav.home", path: "/" },
+    { labelKey: "nav.about", path: "/hakkimizda" },
+    { labelKey: "nav.services", path: "/hizmetler" },
+    { labelKey: "nav.references", path: "/referanslar" },
+    { labelKey: "nav.contact", path: "/iletisim" },
   ];
 
   const services = [
-    "Profesyonel LED Ekran Sistemleri",
-    "Ses, Işık ve Görüntü Sistemleri",
-    "Zayıf Akım Sistemleri",
+    t("footer.service1"),
+    t("footer.service2"),
+    t("footer.service3"),
   ];
 
   const allSocials = [
@@ -66,8 +68,7 @@ export function Footer() {
             <span style={{ color: "var(--dpi-accent)" }}>DPI</span> TEKNOLOJİ
           </h3>
           <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
-            Büyük ölçekli LED ekran, profesyonel ses, ışık ve zayıf akım sistemleri alanında
-            kurumsal çözümler sunan güvenilir teknoloji şirketiniz.
+            {t("footer.intro")}
           </p>
           <div style={{ display: "flex", gap: 8 }}>
             {socials.map(({ Icon, href, label, key }) => (
@@ -114,7 +115,7 @@ export function Footer() {
               letterSpacing: 1,
             }}
           >
-            Hızlı Linkler
+            {t("footer.quickLinks")}
           </h4>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {quickLinks.map((link) => (
@@ -134,7 +135,7 @@ export function Footer() {
                     e.currentTarget.style.color = "rgba(255,255,255,0.6)";
                   }}
                 >
-                  {link.label}
+                  {t(link.labelKey)}
                 </Link>
               </li>
             ))}
@@ -154,7 +155,7 @@ export function Footer() {
               letterSpacing: 1,
             }}
           >
-            Hizmetler
+            {t("footer.services")}
           </h4>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {services.map((service) => (
@@ -178,13 +179,13 @@ export function Footer() {
               letterSpacing: 1,
             }}
           >
-            İletişim
+            {t("footer.contact")}
           </h4>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <MapPin size={18} color="var(--dpi-accent)" style={{ flexShrink: 0, marginTop: 2 }} />
-              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.6 }}>
-                Atatürk Mah. Teknoloji Cad.<br />No:123, Çankaya / ANKARA
+              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-line" }}>
+                {t("footer.address")}
               </span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -226,17 +227,17 @@ export function Footer() {
         }}
       >
         <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 13 }}>
-          &copy; {currentYear} DPI Teknoloji. Tüm hakları saklıdır.
+          &copy; {currentYear} DPI Teknoloji. {t("footer.copyright")}
         </p>
         <div style={{ display: "flex", gap: 24 }}>
           <a href="#" style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none" }}>
-            KVKK Aydınlatma Metni
+            {t("footer.kvkk")}
           </a>
           <a href="#" style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none" }}>
-            Gizlilik Politikası
+            {t("footer.privacy")}
           </a>
           <a href="#" style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none" }}>
-            Çerez Politikası
+            {t("footer.cookies")}
           </a>
         </div>
       </div>

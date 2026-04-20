@@ -2,26 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import bgImage from "figma:asset/ed053a64549a21b8e2a9e3260dcdb7a6c82d99f3.png";
 import { FadeIn } from "../components/FadeIn";
-import { TechPattern } from "../components/TechPattern";
-
-const subjectOptions = [
-  "Profesyonel Led Ekran Sistemleri",
-  "Profesyonel Ses, Işık ve Görüntü Sistemi",
-  "Zayıf Akım Sistemleri",
-  "Teknik Danışmanlık",
-  "Teklif / Fiyat Bilgisi",
-  "Diğer",
-];
-
-// URL'den gelen konu değerini, option listesindeki en uygun değere eşle (case-insensitive)
-function matchSubject(raw: string): string {
-  if (!raw) return "";
-  const normalized = raw.trim().toLocaleLowerCase("tr-TR");
-  const match = subjectOptions.find((opt) => opt.toLocaleLowerCase("tr-TR") === normalized);
-  return match ?? "Diğer";
-}
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function Iletisim() {
+  const { t, lang } = useLanguage();
   const [searchParams] = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -33,6 +17,34 @@ export function Iletisim() {
     message: "",
   });
 
+  const subjectOptions = [
+    t("contact.subject.led"),
+    t("contact.subject.sound"),
+    t("contact.subject.lowcurrent"),
+    t("contact.subject.consulting"),
+    t("contact.subject.quote"),
+    t("contact.subject.other"),
+  ];
+
+  // URL'den gelen konu değerini, option listesindeki en uygun değere eşle (case-insensitive, çift dilli)
+  const matchSubject = (raw: string): string => {
+    if (!raw) return "";
+    const normalize = (s: string) => s.trim().toLocaleLowerCase(lang === "tr" ? "tr-TR" : "en-US");
+    const normalized = normalize(raw);
+    // Önce aktif dildeki opsiyonlar
+    const direct = subjectOptions.find((opt) => normalize(opt) === normalized);
+    if (direct) return direct;
+    // Her iki dilin opsiyonlarını karşılaştırıp eşleşen index'i aktif dilin opsiyonuna dönüştür
+    const enKeys = ["led", "sound", "lowcurrent", "consulting", "quote", "other"];
+    const keyIdx = enKeys.findIndex((k) => {
+      return (
+        normalize(t(`contact.subject.${k}`)) === normalized
+      );
+    });
+    if (keyIdx >= 0) return subjectOptions[keyIdx];
+    return t("contact.subject.other");
+  };
+
   // URL'den ?konu=... parametresi geldiyse subject'i doldur + forma scroll et
   useEffect(() => {
     const konu = searchParams.get("konu");
@@ -42,18 +54,24 @@ export function Iletisim() {
         formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
     }
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, lang]);
 
-  const address = "Atatürk Mahallesi, Teknoloji Caddesi No: 123, Kat: 4, Çankaya/ANKARA";
+  const address =
+    lang === "tr"
+      ? "Atatürk Mahallesi, Teknoloji Caddesi No: 123, Kat: 4, Çankaya/ANKARA"
+      : "Atatürk Neighborhood, Teknoloji Avenue No: 123, Floor: 4, Çankaya/ANKARA";
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Mesajınız alındı! En kısa sürede sizinle iletişime geçeceğiz.");
+    alert(t("contact.form.success"));
     setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -75,16 +93,16 @@ export function Iletisim() {
               className="text-[14px] font-semibold tracking-[3px] uppercase mb-4"
               style={{ color: "var(--dpi-accent)" }}
             >
-              Bize Ulaşın
+              {t("contact.hero.kicker")}
             </p>
             <h1
               className="text-[48px] mb-4"
               style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
             >
-              İletişim
+              {t("contact.hero.title")}
             </h1>
             <p className="text-gray-600 text-[18px] max-w-[700px] mx-auto">
-              Projeleriniz için bizimle iletişime geçin
+              {t("contact.hero.subtitle")}
             </p>
           </FadeIn>
         </div>
@@ -96,200 +114,198 @@ export function Iletisim() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}
             <FadeIn direction="left">
-            <div>
-              <h2
-                className="text-[32px] mb-8"
-                style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
-              >
-                Bize Ulaşın
-              </h2>
-              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-gray-700 text-[15px] mb-2">
-                    Ad Soyad *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
-                  />
-                </div>
+              <div>
+                <h2
+                  className="text-[32px] mb-8"
+                  style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+                >
+                  {t("contact.form.title")}
+                </h2>
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-gray-700 text-[15px] mb-2">
+                      {t("contact.form.name")} *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-gray-700 text-[15px] mb-2">
-                    E-posta *
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-gray-700 text-[15px] mb-2">
+                      {t("contact.form.email")} *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-gray-700 text-[15px] mb-2">
-                    Telefon *
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-gray-700 text-[15px] mb-2">
+                      {t("contact.form.phone")} *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-gray-700 text-[15px] mb-2">
-                    Konu *
-                  </label>
-                  <select
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors bg-white appearance-none"
+                  <div>
+                    <label className="block text-gray-700 text-[15px] mb-2">
+                      {t("contact.form.subject")} *
+                    </label>
+                    <select
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors bg-white appearance-none"
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 16px center",
+                        paddingRight: 44,
+                      }}
+                    >
+                      <option value="" disabled>
+                        {t("contact.form.subject.placeholder")}
+                      </option>
+                      {subjectOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 text-[15px] mb-2">
+                      {t("contact.form.message")} *
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={6}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full text-white py-4 rounded-lg transition-all text-[16px]"
                     style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 16px center",
-                      paddingRight: 44,
+                      backgroundColor: "var(--dpi-accent)",
+                      fontFamily: "var(--font-family-heading)",
+                      fontWeight: 600,
+                      boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      e.currentTarget.style.boxShadow = "0 6px 20px rgba(232,134,12,0.4)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
                     }}
                   >
-                    <option value="" disabled>
-                      Lütfen bir konu seçin
-                    </option>
-                    {subjectOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 text-[15px] mb-2">
-                    Mesajınız *
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] transition-colors resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full text-white py-4 rounded-lg transition-all text-[16px]"
-                  style={{
-                    backgroundColor: "var(--dpi-accent)",
-                    fontFamily: "var(--font-family-heading)",
-                    fontWeight: 600,
-                    boxShadow: "0 4px 16px rgba(232,134,12,0.3)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(232,134,12,0.4)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,134,12,0.3)";
-                  }}
-                >
-                  Gönder
-                </button>
-              </form>
-            </div>
+                    {t("contact.form.submit")}
+                  </button>
+                </form>
+              </div>
             </FadeIn>
 
             {/* Contact Info */}
             <FadeIn direction="right" delay={0.15}>
-            <div>
-              <h2
-                className="text-[32px] mb-8"
-                style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
-              >
-                İletişim Bilgileri
-              </h2>
+              <div>
+                <h2
+                  className="text-[32px] mb-8"
+                  style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+                >
+                  {t("contact.info.title")}
+                </h2>
 
-              <div className="space-y-8">
-                <div>
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                <div className="space-y-8">
+                  <div>
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
+                          {t("contact.info.address.label")}
+                        </h3>
+                        <p className="text-gray-700 text-[15px] leading-relaxed" style={{ whiteSpace: "pre-line" }}>
+                          {t("contact.info.address.value")}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
-                        Adres
-                      </h3>
-                      <p className="text-gray-700 text-[15px] leading-relaxed">
-                        Atatürk Mahallesi, Teknoloji Caddesi<br />
-                        No: 123, Kat: 4<br />
-                        Çankaya / ANKARA
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
+                          {t("contact.info.phone.label")}
+                        </h3>
+                        <p className="text-gray-700 text-[15px]">+90 (312) 123 45 67</p>
+                        <p className="text-gray-700 text-[15px]">+90 (312) 123 45 68</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
-                        Telefon
-                      </h3>
-                      <p className="text-gray-700 text-[15px]">+90 (312) 123 45 67</p>
-                      <p className="text-gray-700 text-[15px]">+90 (312) 123 45 68</p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
+                          {t("contact.info.email.label")}
+                        </h3>
+                        <p className="text-gray-700 text-[15px]">info@dpiteknoloji.com.tr</p>
+                        <p className="text-gray-700 text-[15px]">destek@dpiteknoloji.com.tr</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
-                        E-posta
-                      </h3>
-                      <p className="text-gray-700 text-[15px]">info@dpiteknoloji.com.tr</p>
-                      <p className="text-gray-700 text-[15px]">destek@dpiteknoloji.com.tr</p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
-                        Çalışma Saatleri
-                      </h3>
-                      <p className="text-gray-700 text-[15px]">Pazartesi - Cuma: 09:00 - 18:00</p>
-                      <p className="text-gray-700 text-[15px]">Cumartesi: 10:00 - 15:00</p>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#12487c" }}>
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
+                          {t("contact.info.hours.label")}
+                        </h3>
+                        <p className="text-gray-700 text-[15px]">{t("contact.info.hours.v1")}</p>
+                        <p className="text-gray-700 text-[15px]">{t("contact.info.hours.v2")}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </FadeIn>
           </div>
         </div>
@@ -307,7 +323,7 @@ export function Iletisim() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="DPI Teknoloji Konum"
+              title="DPI Teknoloji"
               className="w-full h-full"
             />
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
@@ -324,9 +340,9 @@ export function Iletisim() {
                   </svg>
                 </div>
                 <div className="text-left">
-                  <p className="text-[12px] text-gray-600 mb-0.5">Konumumuzu Görüntüle</p>
+                  <p className="text-[12px] text-gray-600 mb-0.5">{t("contact.map.view")}</p>
                   <p className="text-[13px]" style={{ color: "#12487c" }}>
-                    Atatürk Mah., Teknoloji Cad. No: 123, Kat: 4, Çankaya/ANKARA
+                    {t("contact.map.address")}
                   </p>
                 </div>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

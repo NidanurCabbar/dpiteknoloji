@@ -1,5 +1,6 @@
 import { Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { useSiteContent } from "../contexts/SiteContentContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const brandColors: Record<string, string> = {
   facebook: "#1877F2",
@@ -12,6 +13,7 @@ const brandColors: Record<string, string> = {
 export function TopBar() {
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
+  const { t } = useLanguage();
 
   const allSocials = [
     { Icon: Facebook, href: "#", label: "Facebook", key: "facebook" as const },
@@ -59,7 +61,7 @@ export function TopBar() {
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ffffff" }}>
             <MapPin size={16} color="#ffffff" />
-            <span>Atatürk Mah. Teknoloji Cad. No:123, Çankaya / ANKARA</span>
+            <span>{t("top.address")}</span>
           </div>
         </div>
 
