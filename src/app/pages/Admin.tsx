@@ -3,16 +3,14 @@ import { useAuth } from "../contexts/AuthContext";
 import { useSiteContent, ServiceData, ProjectData, SocialVisibility, Bi } from "../contexts/SiteContentContext";
 import { useNavigate } from "react-router";
 
-type EditLang = "en" | "tr";
+// Tek bir değer ile hem en hem tr'yi eş zamanlı doldurur
+const bi = (v: string): Bi => ({ en: v, tr: v });
 
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
   const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, setHeroVideoFile } = useSiteContent();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "hesap">("anasayfa");
-
-  /* ─── Düzenlenen dil (EN/TR) ─── */
-  const [editLang, setEditLang] = useState<EditLang>("tr");
 
   /* ─── Toast bildirimi ─── */
   const [toast, setToast] = useState<string | null>(null);
@@ -126,13 +124,9 @@ export function Admin() {
     setServices([
       ...services,
       {
-        title: { en: "New Service", tr: "Yeni Hizmet" },
-        description: { en: "Service description", tr: "Hizmet açıklaması" },
-        features: [
-          { en: "Feature 1", tr: "Özellik 1" },
-          { en: "Feature 2", tr: "Özellik 2" },
-          { en: "Feature 3", tr: "Özellik 3" },
-        ],
+        title: bi("Yeni Hizmet"),
+        description: bi("Hizmet açıklaması"),
+        features: [bi("Özellik 1"), bi("Özellik 2"), bi("Özellik 3")],
         image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1080",
       },
     ]);
@@ -142,18 +136,14 @@ export function Admin() {
     setServices(services.filter((_, i) => i !== index));
   };
 
-  // Bi alanları (title/description) için
+  // Bi alanları (title/description) - tek input her iki dili eş zamanlı günceller
   const handleServiceBiChange = (
     index: number,
     field: "title" | "description",
     value: string
   ) => {
     const newServices = [...services];
-    const current = newServices[index][field];
-    newServices[index] = {
-      ...newServices[index],
-      [field]: { ...current, [editLang]: value },
-    };
+    newServices[index] = { ...newServices[index], [field]: bi(value) };
     setServices(newServices);
   };
 
@@ -169,7 +159,7 @@ export function Admin() {
     newServices[serviceIndex] = {
       ...newServices[serviceIndex],
       features: newServices[serviceIndex].features.map((f, i) =>
-        i === featureIndex ? { ...f, [editLang]: value } : f
+        i === featureIndex ? bi(value) : f
       ),
     };
     setServices(newServices);
@@ -179,7 +169,7 @@ export function Admin() {
     const newServices = [...services];
     newServices[serviceIndex] = {
       ...newServices[serviceIndex],
-      features: [...newServices[serviceIndex].features, { en: "New feature", tr: "Yeni özellik" }],
+      features: [...newServices[serviceIndex].features, bi("Yeni özellik")],
     };
     setServices(newServices);
   };
@@ -199,8 +189,8 @@ export function Admin() {
     setProjects([
       ...projects,
       {
-        client: { en: "New Client", tr: "Yeni Müşteri" },
-        project: { en: "New Project", tr: "Yeni Proje" },
+        client: bi("Yeni Müşteri"),
+        project: bi("Yeni Proje"),
         year: "2024",
       },
     ]);
@@ -210,11 +200,10 @@ export function Admin() {
     setProjects(projects.filter((_, i) => i !== index));
   };
 
-  // Bi alanları (client/project)
+  // Bi alanları (client/project) - tek input her iki dili eş zamanlı günceller
   const handleProjectBiChange = (index: number, field: "client" | "project", value: string) => {
     const newProjects = [...projects];
-    const current = newProjects[index][field];
-    newProjects[index] = { ...newProjects[index], [field]: { ...current, [editLang]: value } };
+    newProjects[index] = { ...newProjects[index], [field]: bi(value) };
     setProjects(newProjects);
   };
 
@@ -339,36 +328,6 @@ export function Admin() {
 
       {/* Content */}
       <div className="max-w-[1400px] mx-auto px-12 py-12">
-        {/* Düzenlenen Dil Seçici - Metin içerikli tablar için göster */}
-        {(activeTab === "anasayfa" ||
-          activeTab === "hizmetler" ||
-          activeTab === "referanslar" ||
-          activeTab === "hakkimizda" ||
-          activeTab === "iletisim") && (
-          <div className="mb-6 bg-white rounded-lg shadow-sm p-4 flex items-center gap-3">
-            <span className="text-sm text-gray-600 font-medium">Düzenlenen Dil:</span>
-            <div className="flex gap-2">
-              {(["en", "tr"] as const).map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setEditLang(l)}
-                  className="px-4 py-1.5 text-sm rounded-md border transition-colors"
-                  style={
-                    editLang === l
-                      ? { backgroundColor: "#12487c", color: "#fff", borderColor: "#12487c" }
-                      : { backgroundColor: "#fff", color: "#4b5563", borderColor: "#d1d5db" }
-                  }
-                >
-                  {l === "en" ? "EN" : "TR"}
-                </button>
-              ))}
-            </div>
-            <span className="text-xs text-gray-400 ml-2">
-              Her iki dildeki içeriği ayrı ayrı düzenleyip kaydedin.
-            </span>
-          </div>
-        )}
-
         {/* ═══ Ana Sayfa ═══ */}
         {activeTab === "anasayfa" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
@@ -377,26 +336,20 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Hero Başlık ({editLang.toUpperCase()})
-                </label>
+                <label className="block text-gray-700 mb-2 font-medium">Hero Başlık</label>
                 <input
                   type="text"
-                  value={heroTitle[editLang]}
-                  onChange={(e) => setHeroTitle({ ...heroTitle, [editLang]: e.target.value })}
+                  value={heroTitle.tr}
+                  onChange={(e) => setHeroTitle(bi(e.target.value))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Hero Açıklama ({editLang.toUpperCase()})
-                </label>
+                <label className="block text-gray-700 mb-2 font-medium">Hero Açıklama</label>
                 <textarea
-                  value={heroDescription[editLang]}
-                  onChange={(e) =>
-                    setHeroDescription({ ...heroDescription, [editLang]: e.target.value })
-                  }
+                  value={heroDescription.tr}
+                  onChange={(e) => setHeroDescription(bi(e.target.value))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   rows={4}
                 />
@@ -480,23 +433,19 @@ export function Admin() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-gray-700 text-sm mb-2">
-                        Başlık ({editLang.toUpperCase()})
-                      </label>
+                      <label className="block text-gray-700 text-sm mb-2">Başlık</label>
                       <input
                         type="text"
-                        value={service.title[editLang]}
+                        value={service.title.tr}
                         onChange={(e) => handleServiceBiChange(index, "title", e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 text-sm mb-2">
-                        Açıklama ({editLang.toUpperCase()})
-                      </label>
+                      <label className="block text-gray-700 text-sm mb-2">Açıklama</label>
                       <textarea
-                        value={service.description[editLang]}
+                        value={service.description.tr}
                         onChange={(e) =>
                           handleServiceBiChange(index, "description", e.target.value)
                         }
@@ -517,9 +466,7 @@ export function Admin() {
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="block text-gray-700 text-sm">
-                          Özellikler ({editLang.toUpperCase()})
-                        </label>
+                        <label className="block text-gray-700 text-sm">Özellikler</label>
                         <button
                           onClick={() => handleAddServiceFeature(index)}
                           className="px-3 py-1 text-sm rounded-lg text-white"
@@ -533,7 +480,7 @@ export function Admin() {
                           <div key={featureIndex} className="flex gap-2">
                             <input
                               type="text"
-                              value={feature[editLang]}
+                              value={feature.tr}
                               onChange={(e) =>
                                 handleServiceFeatureChange(index, featureIndex, e.target.value)
                               }
@@ -602,24 +549,20 @@ export function Admin() {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-gray-700 text-sm mb-1">
-                        Müşteri ({editLang.toUpperCase()})
-                      </label>
+                      <label className="block text-gray-700 text-sm mb-1">Müşteri</label>
                       <input
                         type="text"
-                        value={project.client[editLang]}
+                        value={project.client.tr}
                         onChange={(e) => handleProjectBiChange(index, "client", e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 text-sm mb-1">
-                        Proje ({editLang.toUpperCase()})
-                      </label>
+                      <label className="block text-gray-700 text-sm mb-1">Proje</label>
                       <input
                         type="text"
-                        value={project.project[editLang]}
+                        value={project.project.tr}
                         onChange={(e) => handleProjectBiChange(index, "project", e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
@@ -659,14 +602,10 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Şirket Tanıtımı ({editLang.toUpperCase()})
-                </label>
+                <label className="block text-gray-700 mb-2 font-medium">Şirket Tanıtımı</label>
                 <textarea
-                  value={aboutContent[editLang]}
-                  onChange={(e) =>
-                    setAboutContent({ ...aboutContent, [editLang]: e.target.value })
-                  }
+                  value={aboutContent.tr}
+                  onChange={(e) => setAboutContent(bi(e.target.value))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   rows={6}
                 />
@@ -691,14 +630,10 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Adres ({editLang.toUpperCase()})
-                </label>
+                <label className="block text-gray-700 mb-2 font-medium">Adres</label>
                 <textarea
-                  value={contactAddress[editLang]}
-                  onChange={(e) =>
-                    setContactAddress({ ...contactAddress, [editLang]: e.target.value })
-                  }
+                  value={contactAddress.tr}
+                  onChange={(e) => setContactAddress(bi(e.target.value))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   rows={3}
                 />
