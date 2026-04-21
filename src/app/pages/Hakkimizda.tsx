@@ -2,9 +2,17 @@ import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import bgImage from "figma:asset/0375b7736794914741acd8ea38b508a023ca321b.png";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useSiteContent } from "../contexts/SiteContentContext";
 
 export function Hakkimizda() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { content } = useSiteContent();
+  const aboutText = content.hakkimizda.aboutText[lang];
+  // Admin panelindeki şirket tanıtımı metnini paragraflara böl (boş satır veya tek \n)
+  const aboutParagraphs = aboutText
+    .split(/\n\s*\n|\n/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
 
   const values = [
     {
@@ -95,9 +103,16 @@ export function Hakkimizda() {
                 >
                   {t("about.companyTitle")}
                 </h2>
-                <p className="text-gray-700 text-[16px] leading-relaxed mb-6">{t("about.p1")}</p>
-                <p className="text-gray-700 text-[16px] leading-relaxed mb-6">{t("about.p2")}</p>
-                <p className="text-gray-700 text-[16px] leading-relaxed">{t("about.p3")}</p>
+                {aboutParagraphs.map((p, i) => (
+                  <p
+                    key={i}
+                    className={`text-gray-700 text-[16px] leading-relaxed ${
+                      i < aboutParagraphs.length - 1 ? "mb-6" : ""
+                    }`}
+                  >
+                    {p}
+                  </p>
+                ))}
               </div>
             </FadeIn>
             <FadeIn direction="right" delay={0.2}>

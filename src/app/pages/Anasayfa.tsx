@@ -7,8 +7,8 @@ import { useLanguage } from "../contexts/LanguageContext";
 
 export function Anasayfa() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { heroVideoSrc } = useSiteContent();
-  const { t } = useLanguage();
+  const { content, heroVideoSrc } = useSiteContent();
+  const { t, lang } = useLanguage();
 
   useEffect(() => {
     if (videoRef.current) {
@@ -18,26 +18,21 @@ export function Anasayfa() {
     }
   }, [heroVideoSrc]);
 
-  const services = [
-    {
-      title: t("home.service1.title"),
-      description: t("home.service1.description"),
-      videoThumbnail:
-        "https://images.unsplash.com/photo-1767582008091-e688acfeace9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXJnZSUyMExFRCUyMHNjcmVlbiUyMGRpc3BsYXklMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc3NTU2NjkzOHww&ixlib=rb-4.1.0&q=80&w=1080",
-    },
-    {
-      title: t("home.service2.title"),
-      description: t("home.service2.description"),
-      videoThumbnail:
-        "https://images.unsplash.com/photo-1763420952993-23a57c37c2ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBhdWRpbyUyMHNvdW5kJTIwc3lzdGVtJTIwY29uY2VydHxlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    },
-    {
-      title: t("home.service3.title"),
-      description: t("home.service3.description"),
-      videoThumbnail:
-        "https://images.unsplash.com/photo-1758939563815-208625d3e7ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcmNoaXRlY3R1cmFsJTIwbGlnaHRpbmclMjBkZXNpZ24lMjBidWlsZGluZ3xlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    },
+  // Admin panelinde tanımlanan hizmetleri ana sayfa önizleme kartları için kullan
+  const fallbackThumbnails = [
+    "https://images.unsplash.com/photo-1767582008091-e688acfeace9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXJnZSUyMExFRCUyMHNjcmVlbiUyMGRpc3BsYXklMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc3NTU2NjkzOHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1763420952993-23a57c37c2ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBhdWRpbyUyMHNvdW5kJTIwc3lzdGVtJTIwY29uY2VydHxlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1758939563815-208625d3e7ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcmNoaXRlY3R1cmFsJTIwbGlnaHRpbmclMjBkZXNpZ24lMjBidWlsZGluZ3xlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
   ];
+
+  const services = content.hizmetler.services.slice(0, 3).map((s, i) => ({
+    title: s.title[lang],
+    description: s.description[lang],
+    videoThumbnail: s.image || fallbackThumbnails[i] || fallbackThumbnails[0],
+  }));
+
+  const heroTitleText = content.anasayfa.heroTitle[lang];
+  const heroDescriptionText = content.anasayfa.heroDescription[lang];
 
   return (
     <div className="pt-[72px]">
@@ -73,9 +68,7 @@ export function Anasayfa() {
                 textShadow: "0 2px 16px rgba(0,0,0,0.55)",
               }}
             >
-              {t("home.hero.titleBefore")}
-              <span style={{ color: "var(--dpi-accent-light)" }}>{t("home.hero.titleAccent")}</span>
-              {t("home.hero.titleAfter")}
+              {heroTitleText}
             </h1>
           </FadeIn>
           <FadeIn direction="up" delay={0.4}>
@@ -83,7 +76,7 @@ export function Anasayfa() {
               className="text-[20px] text-white max-w-[800px] mx-auto leading-relaxed"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
             >
-              {t("home.hero.description")}
+              {heroDescriptionText}
             </p>
           </FadeIn>
         </div>

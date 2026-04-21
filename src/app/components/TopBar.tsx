@@ -13,7 +13,11 @@ const brandColors: Record<string, string> = {
 export function TopBar() {
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
-  const { t } = useLanguage();
+  const { lang } = useLanguage();
+  const phone1 = content.iletisim.phone1;
+  const phoneTel = phone1.replace(/[^+\d]/g, "");
+  // TopBar tek satır istediği için adresi virgülle birleştir
+  const addressOneLine = content.iletisim.address[lang].replace(/\s*\n\s*/g, ", ");
 
   const allSocials = [
     { Icon: Facebook, href: "#", label: "Facebook", key: "facebook" as const },
@@ -53,15 +57,15 @@ export function TopBar() {
         {/* Sol: iletişim bilgileri */}
         <div style={{ display: "flex", alignItems: "center", gap: 24, color: "#ffffff" }}>
           <a
-            href="tel:+903121234567"
+            href={`tel:${phoneTel}`}
             style={{ display: "flex", alignItems: "center", gap: 8, color: "#ffffff", textDecoration: "none" }}
           >
             <Phone size={16} color="#ffffff" />
-            <span>+90 (312) 123 45 67</span>
+            <span>{phone1}</span>
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ffffff" }}>
             <MapPin size={16} color="#ffffff" />
-            <span>{t("top.address")}</span>
+            <span>{addressOneLine}</span>
           </div>
         </div>
 

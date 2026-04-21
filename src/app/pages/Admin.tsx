@@ -1,13 +1,18 @@
 import { useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useSiteContent, ServiceData, ProjectData, SocialVisibility } from "../contexts/SiteContentContext";
+import { useSiteContent, ServiceData, ProjectData, SocialVisibility, Bi } from "../contexts/SiteContentContext";
 import { useNavigate } from "react-router";
+
+type EditLang = "en" | "tr";
 
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
   const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, setHeroVideoFile } = useSiteContent();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "hesap">("anasayfa");
+
+  /* ─── Düzenlenen dil (EN/TR) ─── */
+  const [editLang, setEditLang] = useState<EditLang>("tr");
 
   /* ─── Toast bildirimi ─── */
   const [toast, setToast] = useState<string | null>(null);
@@ -17,23 +22,24 @@ export function Admin() {
   };
 
   /* ─── Anasayfa state ─── */
-  const [heroTitle, setHeroTitle] = useState(content.anasayfa.heroTitle);
-  const [heroDescription, setHeroDescription] = useState(content.anasayfa.heroDescription);
+  const [heroTitle, setHeroTitle] = useState<Bi>(content.anasayfa.heroTitle);
+  const [heroDescription, setHeroDescription] = useState<Bi>(content.anasayfa.heroDescription);
   const [videoFileName, setVideoFileName] = useState<string | null>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const pendingVideoRef = useRef<File | null>(null);
 
   /* ─── Hizmetler state ─── */
   const [services, setServices] = useState<ServiceData[]>(content.hizmetler.services);
+  const serviceImageRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   /* ─── Referanslar state ─── */
   const [projects, setProjects] = useState<ProjectData[]>(content.referanslar.projects);
 
   /* ─── Hakkımızda state ─── */
-  const [aboutContent, setAboutContent] = useState(content.hakkimizda.aboutText);
+  const [aboutContent, setAboutContent] = useState<Bi>(content.hakkimizda.aboutText);
 
   /* ─── İletişim state ─── */
-  const [contactAddress, setContactAddress] = useState(content.iletisim.address);
+  const [contactAddress, setContactAddress] = useState<Bi>(content.iletisim.address);
   const [contactPhone1, setContactPhone1] = useState(content.iletisim.phone1);
   const [contactPhone2, setContactPhone2] = useState(content.iletisim.phone2);
   const [contactEmail1, setContactEmail1] = useState(content.iletisim.email1);
@@ -120,9 +126,13 @@ export function Admin() {
     setServices([
       ...services,
       {
-        title: "Yeni Hizmet",
-        description: "Hizmet açıklaması",
-        features: ["Özellik 1", "Özellik 2", "Özellik 3"],
+        title: { en: "New Service", tr: "Yeni Hizmet" },
+        description: { en: "Service description", tr: "Hizmet açıklaması" },
+        features: [
+          { en: "Feature 1", tr: "Özellik 1" },
+          { en: "Feature 2", tr: "Özellik 2" },
+          { en: "Feature 3", tr: "Özellik 3" },
+        ],
         image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1080",
       },
     ]);
@@ -132,9 +142,25 @@ export function Admin() {
     setServices(services.filter((_, i) => i !== index));
   };
 
-  const handleServiceChange = (index: number, field: keyof ServiceData, value: string) => {
+  // Bi alanları (title/description) için
+  const handleServiceBiChange = (
+    index: number,
+    field: "title" | "description",
+    value: string
+  ) => {
     const newServices = [...services];
-    newServices[index] = { ...newServices[index], [field]: value };
+    const current = newServices[index][field];
+    newServices[index] = {
+      ...newServices[index],
+      [field]: { ...current, [editLang]: value },
+    };
+    setServices(newServices);
+  };
+
+  // Image alanı (tek string)
+  const handleServiceImageChange = (index: number, value: string) => {
+    const newServices = [...services];
+    newServices[index] = { ...newServices[index], image: value };
     setServices(newServices);
   };
 
@@ -142,7 +168,9 @@ export function Admin() {
     const newServices = [...services];
     newServices[serviceIndex] = {
       ...newServices[serviceIndex],
-      features: newServices[serviceIndex].features.map((f, i) => (i === featureIndex ? value : f)),
+      features: newServices[serviceIndex].features.map((f, i) =>
+        i === featureIndex ? { ...f, [editLang]: value } : f
+      ),
     };
     setServices(newServices);
   };
@@ -151,7 +179,7 @@ export function Admin() {
     const newServices = [...services];
     newServices[serviceIndex] = {
       ...newServices[serviceIndex],
-      features: [...newServices[serviceIndex].features, "Yeni özellik"],
+      features: [...newServices[serviceIndex].features, { en: "New feature", tr: "Yeni özellik" }],
     };
     setServices(newServices);
   };
@@ -168,16 +196,32 @@ export function Admin() {
   /* ═══════ REFERANS YARDIMCILARI ═══════ */
 
   const handleAddProject = () => {
-    setProjects([...projects, { client: "Yeni Müşteri", project: "Yeni Proje", year: "2024" }]);
+    setProjects([
+      ...projects,
+      {
+        client: { en: "New Client", tr: "Yeni Müşteri" },
+        project: { en: "New Project", tr: "Yeni Proje" },
+        year: "2024",
+      },
+    ]);
   };
 
   const handleRemoveProject = (index: number) => {
     setProjects(projects.filter((_, i) => i !== index));
   };
 
-  const handleProjectChange = (index: number, field: keyof ProjectData, value: string) => {
+  // Bi alanları (client/project)
+  const handleProjectBiChange = (index: number, field: "client" | "project", value: string) => {
     const newProjects = [...projects];
-    newProjects[index] = { ...newProjects[index], [field]: value };
+    const current = newProjects[index][field];
+    newProjects[index] = { ...newProjects[index], [field]: { ...current, [editLang]: value } };
+    setProjects(newProjects);
+  };
+
+  // Year (tek string)
+  const handleProjectYearChange = (index: number, value: string) => {
+    const newProjects = [...projects];
+    newProjects[index] = { ...newProjects[index], year: value };
     setProjects(newProjects);
   };
 
@@ -295,6 +339,36 @@ export function Admin() {
 
       {/* Content */}
       <div className="max-w-[1400px] mx-auto px-12 py-12">
+        {/* Düzenlenen Dil Seçici - Metin içerikli tablar için göster */}
+        {(activeTab === "anasayfa" ||
+          activeTab === "hizmetler" ||
+          activeTab === "referanslar" ||
+          activeTab === "hakkimizda" ||
+          activeTab === "iletisim") && (
+          <div className="mb-6 bg-white rounded-lg shadow-sm p-4 flex items-center gap-3">
+            <span className="text-sm text-gray-600 font-medium">Düzenlenen Dil:</span>
+            <div className="flex gap-2">
+              {(["en", "tr"] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setEditLang(l)}
+                  className="px-4 py-1.5 text-sm rounded-md border transition-colors"
+                  style={
+                    editLang === l
+                      ? { backgroundColor: "#12487c", color: "#fff", borderColor: "#12487c" }
+                      : { backgroundColor: "#fff", color: "#4b5563", borderColor: "#d1d5db" }
+                  }
+                >
+                  {l === "en" ? "EN" : "TR"}
+                </button>
+              ))}
+            </div>
+            <span className="text-xs text-gray-400 ml-2">
+              Her iki dildeki içeriği ayrı ayrı düzenleyip kaydedin.
+            </span>
+          </div>
+        )}
+
         {/* ═══ Ana Sayfa ═══ */}
         {activeTab === "anasayfa" && (
           <div className="bg-white rounded-lg shadow-sm p-8">
@@ -303,20 +377,26 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">Hero Başlık</label>
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Hero Başlık ({editLang.toUpperCase()})
+                </label>
                 <input
                   type="text"
-                  value={heroTitle}
-                  onChange={(e) => setHeroTitle(e.target.value)}
+                  value={heroTitle[editLang]}
+                  onChange={(e) => setHeroTitle({ ...heroTitle, [editLang]: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">Hero Açıklama</label>
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Hero Açıklama ({editLang.toUpperCase()})
+                </label>
                 <textarea
-                  value={heroDescription}
-                  onChange={(e) => setHeroDescription(e.target.value)}
+                  value={heroDescription[editLang]}
+                  onChange={(e) =>
+                    setHeroDescription({ ...heroDescription, [editLang]: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   rows={4}
                 />
@@ -400,20 +480,26 @@ export function Admin() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-gray-700 text-sm mb-2">Başlık</label>
+                      <label className="block text-gray-700 text-sm mb-2">
+                        Başlık ({editLang.toUpperCase()})
+                      </label>
                       <input
                         type="text"
-                        value={service.title}
-                        onChange={(e) => handleServiceChange(index, "title", e.target.value)}
+                        value={service.title[editLang]}
+                        onChange={(e) => handleServiceBiChange(index, "title", e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 text-sm mb-2">Açıklama</label>
+                      <label className="block text-gray-700 text-sm mb-2">
+                        Açıklama ({editLang.toUpperCase()})
+                      </label>
                       <textarea
-                        value={service.description}
-                        onChange={(e) => handleServiceChange(index, "description", e.target.value)}
+                        value={service.description[editLang]}
+                        onChange={(e) =>
+                          handleServiceBiChange(index, "description", e.target.value)
+                        }
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                         rows={3}
                       />
@@ -424,14 +510,16 @@ export function Admin() {
                       <input
                         type="text"
                         value={service.image}
-                        onChange={(e) => handleServiceChange(index, "image", e.target.value)}
+                        onChange={(e) => handleServiceImageChange(index, e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                       />
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="block text-gray-700 text-sm">Özellikler</label>
+                        <label className="block text-gray-700 text-sm">
+                          Özellikler ({editLang.toUpperCase()})
+                        </label>
                         <button
                           onClick={() => handleAddServiceFeature(index)}
                           className="px-3 py-1 text-sm rounded-lg text-white"
@@ -445,8 +533,10 @@ export function Admin() {
                           <div key={featureIndex} className="flex gap-2">
                             <input
                               type="text"
-                              value={feature}
-                              onChange={(e) => handleServiceFeatureChange(index, featureIndex, e.target.value)}
+                              value={feature[editLang]}
+                              onChange={(e) =>
+                                handleServiceFeatureChange(index, featureIndex, e.target.value)
+                              }
                               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                             />
                             <button
@@ -512,21 +602,25 @@ export function Admin() {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-gray-700 text-sm mb-1">Müşteri</label>
+                      <label className="block text-gray-700 text-sm mb-1">
+                        Müşteri ({editLang.toUpperCase()})
+                      </label>
                       <input
                         type="text"
-                        value={project.client}
-                        onChange={(e) => handleProjectChange(index, "client", e.target.value)}
+                        value={project.client[editLang]}
+                        onChange={(e) => handleProjectBiChange(index, "client", e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 text-sm mb-1">Proje</label>
+                      <label className="block text-gray-700 text-sm mb-1">
+                        Proje ({editLang.toUpperCase()})
+                      </label>
                       <input
                         type="text"
-                        value={project.project}
-                        onChange={(e) => handleProjectChange(index, "project", e.target.value)}
+                        value={project.project[editLang]}
+                        onChange={(e) => handleProjectBiChange(index, "project", e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
                     </div>
@@ -536,7 +630,7 @@ export function Admin() {
                       <input
                         type="text"
                         value={project.year}
-                        onChange={(e) => handleProjectChange(index, "year", e.target.value)}
+                        onChange={(e) => handleProjectYearChange(index, e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
                     </div>
@@ -565,10 +659,14 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">Şirket Tanıtımı</label>
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Şirket Tanıtımı ({editLang.toUpperCase()})
+                </label>
                 <textarea
-                  value={aboutContent}
-                  onChange={(e) => setAboutContent(e.target.value)}
+                  value={aboutContent[editLang]}
+                  onChange={(e) =>
+                    setAboutContent({ ...aboutContent, [editLang]: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   rows={6}
                 />
@@ -593,10 +691,14 @@ export function Admin() {
             </h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">Adres</label>
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Adres ({editLang.toUpperCase()})
+                </label>
                 <textarea
-                  value={contactAddress}
-                  onChange={(e) => setContactAddress(e.target.value)}
+                  value={contactAddress[editLang]}
+                  onChange={(e) =>
+                    setContactAddress({ ...contactAddress, [editLang]: e.target.value })
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                   rows={3}
                 />

@@ -3,9 +3,11 @@ import { useSearchParams } from "react-router";
 import bgImage from "figma:asset/ed053a64549a21b8e2a9e3260dcdb7a6c82d99f3.png";
 import { FadeIn } from "../components/FadeIn";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useSiteContent } from "../contexts/SiteContentContext";
 
 export function Iletisim() {
   const { t, lang } = useLanguage();
+  const { content } = useSiteContent();
   const [searchParams] = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -57,10 +59,9 @@ export function Iletisim() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, lang]);
 
-  const address =
-    lang === "tr"
-      ? "Atatürk Mahallesi, Teknoloji Caddesi No: 123, Kat: 4, Çankaya/ANKARA"
-      : "Atatürk Neighborhood, Teknoloji Avenue No: 123, Floor: 4, Çankaya/ANKARA";
+  // Admin panelinde düzenlenen adresi kullan (satır kırmalarını boşluk yaparak tek satır haritaya ver)
+  const addressMultiline = content.iletisim.address[lang];
+  const address = addressMultiline.replace(/\s*\n\s*/g, ", ");
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -254,7 +255,7 @@ export function Iletisim() {
                           {t("contact.info.address.label")}
                         </h3>
                         <p className="text-gray-700 text-[15px] leading-relaxed" style={{ whiteSpace: "pre-line" }}>
-                          {t("contact.info.address.value")}
+                          {addressMultiline}
                         </p>
                       </div>
                     </div>
@@ -269,8 +270,8 @@ export function Iletisim() {
                         <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
                           {t("contact.info.phone.label")}
                         </h3>
-                        <p className="text-gray-700 text-[15px]">+90 (312) 123 45 67</p>
-                        <p className="text-gray-700 text-[15px]">+90 (312) 123 45 68</p>
+                        <p className="text-gray-700 text-[15px]">{content.iletisim.phone1}</p>
+                        <p className="text-gray-700 text-[15px]">{content.iletisim.phone2}</p>
                       </div>
                     </div>
 
@@ -284,8 +285,8 @@ export function Iletisim() {
                         <h3 className="text-[18px] mb-2" style={{ color: "#12487c" }}>
                           {t("contact.info.email.label")}
                         </h3>
-                        <p className="text-gray-700 text-[15px]">info@dpiteknoloji.com.tr</p>
-                        <p className="text-gray-700 text-[15px]">destek@dpiteknoloji.com.tr</p>
+                        <p className="text-gray-700 text-[15px]">{content.iletisim.email1}</p>
+                        <p className="text-gray-700 text-[15px]">{content.iletisim.email2}</p>
                       </div>
                     </div>
 

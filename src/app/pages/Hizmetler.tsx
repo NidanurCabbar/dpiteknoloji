@@ -5,54 +5,18 @@ import bgImage4 from "figma:asset/6889dc6ba9f2c3f5c40b2c63aa751ed5e5c4732a.png";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useSiteContent } from "../contexts/SiteContentContext";
 
 export function Hizmetler() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { content } = useSiteContent();
 
-  const services = [
-    {
-      title: t("services.s1.title"),
-      image:
-        "https://images.unsplash.com/photo-1575719028439-65ce8662c1cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwzfHxsYXJnZSUyMExFRCUyMHNjcmVlbiUyMGRpc3BsYXklMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc3NTU2NjkzOHww&ixlib=rb-4.1.0&q=80&w=1080",
-      features: [
-        t("services.s1.f1"),
-        t("services.s1.f2"),
-        t("services.s1.f3"),
-        t("services.s1.f4"),
-        t("services.s1.f5"),
-        t("services.s1.f6"),
-      ],
-      description: t("services.s1.description"),
-    },
-    {
-      title: t("services.s2.title"),
-      image:
-        "https://images.unsplash.com/photo-1773625545016-d575264483e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhdWRpbyUyMHNvdW5kJTIwc3lzdGVtJTIwY29uY2VydHxlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      features: [
-        t("services.s2.f1"),
-        t("services.s2.f2"),
-        t("services.s2.f3"),
-        t("services.s2.f4"),
-        t("services.s2.f5"),
-        t("services.s2.f6"),
-      ],
-      description: t("services.s2.description"),
-    },
-    {
-      title: t("services.s3.title"),
-      image:
-        "https://images.unsplash.com/photo-1760210885713-624a29a48633?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxhcmNoaXRlY3R1cmFsJTIwbGlnaHRpbmclMjBkZXNpZ24lMjBidWlsZGluZ3xlbnwxfHx8fDE3NzU1NjY5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      features: [
-        t("services.s3.f1"),
-        t("services.s3.f2"),
-        t("services.s3.f3"),
-        t("services.s3.f4"),
-        t("services.s3.f5"),
-        t("services.s3.f6"),
-      ],
-      description: t("services.s3.description"),
-    },
-  ];
+  const services = content.hizmetler.services.map((s) => ({
+    title: s.title[lang],
+    image: s.image,
+    features: s.features.map((f) => f[lang]),
+    description: s.description[lang],
+  }));
 
   return (
     <div className="pt-[72px]">

@@ -1,6 +1,7 @@
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useSiteContent } from "../contexts/SiteContentContext";
 
 interface Reference {
   client: string;
@@ -9,14 +10,13 @@ interface Reference {
 }
 
 export function Referanslar() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { content } = useSiteContent();
 
-  const references: Reference[] = [
-    { client: t("refs.client.konya"), project: t("refs.project.default") },
-    { client: t("refs.client.dsi"), project: t("refs.project.default") },
-    { client: t("refs.client.esenyurt"), project: t("refs.project.default") },
-    { client: t("refs.client.tcdd"), project: t("refs.project.default") },
-  ];
+  const references: Reference[] = content.referanslar.projects.map((p) => ({
+    client: p.client[lang],
+    project: p.project[lang],
+  }));
 
   return (
     <div className="pt-[72px]">
