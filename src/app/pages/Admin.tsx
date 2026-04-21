@@ -147,11 +147,32 @@ export function Admin() {
     setServices(newServices);
   };
 
-  // Image alanı (tek string)
+  // Image alanı (tek string - artık local dosyadan data URL olarak alınıyor)
   const handleServiceImageChange = (index: number, value: string) => {
     const newServices = [...services];
     newServices[index] = { ...newServices[index], image: value };
     setServices(newServices);
+  };
+
+  // Local dosyadan görsel yükle: FileReader ile base64 data URL'ye çevir
+  const handleServiceImageFile = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("⚠ Lütfen bir görsel dosyası seçin");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      handleServiceImageChange(index, dataUrl);
+    };
+    reader.readAsDataURL(file);
+    // aynı dosyayı tekrar seçebilmek için input'u sıfırla
+    e.target.value = "";
   };
 
   const handleServiceFeatureChange = (serviceIndex: number, featureIndex: number, value: string) => {
@@ -455,13 +476,70 @@ export function Admin() {
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 text-sm mb-2">Görsel URL</label>
-                      <input
-                        type="text"
-                        value={service.image}
-                        onChange={(e) => handleServiceImageChange(index, e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                      />
+                      <label className="block text-gray-700 text-sm mb-2">Görsel</label>
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-[#12487c] transition-colors"
+                        onClick={() => serviceImageRefs.current[index]?.click()}
+                      >
+                        <input
+                          ref={(el) => {
+                            serviceImageRefs.current[index] = el;
+                          }}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleServiceImageFile(index, e)}
+                          className="hidden"
+                        />
+                        {service.image ? (
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={service.image}
+                              alt="Önizleme"
+                              className="w-24 h-24 object-cover rounded-md border border-gray-200 flex-shrink-0"
+                            />
+                            <div className="flex-1 text-left">
+                              <p className="text-[14px] text-green-600 font-medium mb-1">
+                                ✓ Görsel yüklendi
+                              </p>
+                              <p className="text-[13px] text-gray-500">
+                                Değiştirmek için tıklayın veya yeni bir dosya sürükleyin
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleServiceImageChange(index, "");
+                              }}
+                              className="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs"
+                            >
+                              Kaldır
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="py-4">
+                            <svg
+                              className="w-9 h-9 mx-auto mb-2 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <p className="text-gray-500 text-[14px]">
+                              Görsel seçmek için tıklayın
+                            </p>
+                            <p className="text-gray-400 text-[12px] mt-1">
+                              PNG, JPG, WEBP • bilgisayarınızdan dosya yükleyin
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div>
