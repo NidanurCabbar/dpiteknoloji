@@ -34,6 +34,12 @@ export function Anasayfa() {
   const heroTitleText = content.anasayfa.heroTitle[lang];
   const heroDescriptionText = content.anasayfa.heroDescription[lang];
 
+  // Başlığın son kelimesini accent rengiyle vurgula (önceki tasarıma uygun)
+  const trimmedTitle = heroTitleText.trim();
+  const lastSpace = trimmedTitle.lastIndexOf(" ");
+  const heroTitleBefore = lastSpace >= 0 ? trimmedTitle.slice(0, lastSpace + 1) : "";
+  const heroTitleAccent = lastSpace >= 0 ? trimmedTitle.slice(lastSpace + 1) : trimmedTitle;
+
   return (
     <div className="pt-[72px]">
       {/* Hero Section */}
@@ -68,7 +74,8 @@ export function Anasayfa() {
                 textShadow: "0 2px 16px rgba(0,0,0,0.55)",
               }}
             >
-              {heroTitleText}
+              {heroTitleBefore}
+              <span style={{ color: "var(--dpi-accent-light)" }}>{heroTitleAccent}</span>
             </h1>
           </FadeIn>
           <FadeIn direction="up" delay={0.4}>

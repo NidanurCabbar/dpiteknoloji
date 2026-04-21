@@ -148,8 +148,14 @@ const defaultContent: SiteContent = {
   },
   hakkimizda: {
     aboutText: {
-      en: "Founded in 2010, DPI TEKNOLOJİ is one of Turkey's leading companies in visual and audio technologies.",
-      tr: "2010 yılında kurulan DPI TEKNOLOJİ, görsel ve işitsel teknolojiler alanında Türkiye'nin önde gelen şirketlerinden biridir.",
+      en:
+        "DPI Teknoloji is a technology firm that stands out in professional LED displays, sound-light-image systems and low-current solutions thanks to its engineering discipline and innovative approach.\n\n" +
+        "We approach every project as a strategic process that creates brand reputation and long-term investment value beyond a mere technical implementation. We provide end-to-end professional service across needs analysis, system design, implementation and after-sales support.\n\n" +
+        "With our experience across diverse sectors, strong technical infrastructure and forward-looking vision, we continue producing innovative and sustainable solutions that adapt to future expectations.",
+      tr:
+        "DPI Teknoloji, profesyonel LED ekranlar, ses-ışık-görüntü sistemleri ve zayıf akım çözümleri alanında faaliyet gösteren, mühendislik disiplini ve yenilikçi yaklaşımıyla öne çıkan bir teknoloji firmasıdır.\n\n" +
+        "Her projeyi teknik bir uygulama olmanın ötesinde, marka itibarı ve uzun vadeli yatırım değeri üreten stratejik bir süreç olarak ele alıyoruz. İhtiyaç analizi, sistem tasarımı, uygulama ve satış sonrası destek süreçlerinin tamamında uçtan uca profesyonel hizmet sunuyoruz.\n\n" +
+        "Farklı sektörlerdeki deneyimimiz, güçlü teknik altyapımız ve gelişime açık vizyonumuzla, geleceğin beklentilerine uyum sağlayan yenilikçi ve sürdürülebilir çözümler üretmeye devam ediyoruz.",
     },
   },
   iletisim: {

@@ -8,9 +8,9 @@ export function Hakkimizda() {
   const { t, lang } = useLanguage();
   const { content } = useSiteContent();
   const aboutText = content.hakkimizda.aboutText[lang];
-  // Admin panelindeki şirket tanıtımı metnini paragraflara böl (boş satır veya tek \n)
+  // Admin panelindeki şirket tanıtımı metnini paragraflara böl (boş satırlarda)
   const aboutParagraphs = aboutText
-    .split(/\n\s*\n|\n/)
+    .split(/\n\s*\n+/)
     .map((p) => p.trim())
     .filter((p) => p.length > 0);
 
