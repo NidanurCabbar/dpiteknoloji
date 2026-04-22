@@ -181,12 +181,13 @@ const defaultContent: SiteContent = {
 interface SiteContentContextType {
   content: SiteContent;
   heroVideoSrc: string;
-  updateAnasayfa: (data: AnasayfaContent) => void;
-  updateHizmetler: (data: HizmetlerContent) => void;
-  updateReferanslar: (data: ReferanslarContent) => void;
-  updateHakkimizda: (data: HakkimizdaContent) => void;
-  updateIletisim: (data: IletisimContent) => void;
-  updateSocialVisibility: (data: SocialVisibility) => void;
+  // update* fonksiyonları başarı durumunu döner (localStorage quota vs hataları için)
+  updateAnasayfa: (data: AnasayfaContent) => boolean;
+  updateHizmetler: (data: HizmetlerContent) => boolean;
+  updateReferanslar: (data: ReferanslarContent) => boolean;
+  updateHakkimizda: (data: HakkimizdaContent) => boolean;
+  updateIletisim: (data: IletisimContent) => boolean;
+  updateSocialVisibility: (data: SocialVisibility) => boolean;
   setHeroVideoFile: (file: File) => void;
 }
 
@@ -309,44 +310,52 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const saveToStorage = (newContent: SiteContent) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newContent));
+  // localStorage yazımı quota hatası fırlatabilir (büyük base64 görseller vs).
+  // Hatayı yutmuyoruz; çağıran katmanın bilmesi için false dönüyoruz.
+  const saveToStorage = (newContent: SiteContent): boolean => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newContent));
+      return true;
+    } catch (e) {
+      console.error("SiteContent localStorage yazma hatası:", e);
+      return false;
+    }
   };
 
-  const updateAnasayfa = (data: AnasayfaContent) => {
+  const updateAnasayfa = (data: AnasayfaContent): boolean => {
     const updated = { ...content, anasayfa: data };
     setContent(updated);
-    saveToStorage(updated);
+    return saveToStorage(updated);
   };
 
-  const updateHizmetler = (data: HizmetlerContent) => {
+  const updateHizmetler = (data: HizmetlerContent): boolean => {
     const updated = { ...content, hizmetler: data };
     setContent(updated);
-    saveToStorage(updated);
+    return saveToStorage(updated);
   };
 
-  const updateReferanslar = (data: ReferanslarContent) => {
+  const updateReferanslar = (data: ReferanslarContent): boolean => {
     const updated = { ...content, referanslar: data };
     setContent(updated);
-    saveToStorage(updated);
+    return saveToStorage(updated);
   };
 
-  const updateHakkimizda = (data: HakkimizdaContent) => {
+  const updateHakkimizda = (data: HakkimizdaContent): boolean => {
     const updated = { ...content, hakkimizda: data };
     setContent(updated);
-    saveToStorage(updated);
+    return saveToStorage(updated);
   };
 
-  const updateIletisim = (data: IletisimContent) => {
+  const updateIletisim = (data: IletisimContent): boolean => {
     const updated = { ...content, iletisim: data };
     setContent(updated);
-    saveToStorage(updated);
+    return saveToStorage(updated);
   };
 
-  const updateSocialVisibility = (data: SocialVisibility) => {
+  const updateSocialVisibility = (data: SocialVisibility): boolean => {
     const updated = { ...content, socialVisibility: data };
     setContent(updated);
-    saveToStorage(updated);
+    return saveToStorage(updated);
   };
 
   const setHeroVideoFile = (file: File) => {

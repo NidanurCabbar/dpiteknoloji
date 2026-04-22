@@ -6,6 +6,44 @@ import { useNavigate } from "react-router";
 // Tek bir değer ile hem en hem tr'yi eş zamanlı doldurur
 const bi = (v: string): Bi => ({ en: v, tr: v });
 
+/**
+ * Görseli canvas üzerinde küçültüp JPEG olarak sıkıştırır.
+ * localStorage kota aşımını önler (maks ~5-10 MB).
+ * @param file Kullanıcının seçtiği görsel
+ * @param maxSize En uzun kenar piksel sınırı
+ * @param quality JPEG kalite (0-1)
+ */
+async function fileToCompressedDataUrl(
+  file: File,
+  maxSize = 1600,
+  quality = 0.85
+): Promise<string> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.src = url;
+    await new Promise<void>((res, rej) => {
+      img.onload = () => res();
+      img.onerror = () => rej(new Error("Görsel yüklenemedi"));
+    });
+    const scale = Math.min(
+      1,
+      maxSize / Math.max(img.naturalWidth, img.naturalHeight)
+    );
+    const cw = Math.round(img.naturalWidth * scale);
+    const ch = Math.round(img.naturalHeight * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = cw;
+    canvas.height = ch;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas context alınamadı");
+    ctx.drawImage(img, 0, 0, cw, ch);
+    return canvas.toDataURL("image/jpeg", quality);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
   const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, setHeroVideoFile } = useSiteContent();
@@ -71,12 +109,16 @@ export function Admin() {
       pendingVideoRef.current = null;
     }
     // Metin içeriklerini kaydet
-    updateAnasayfa({
+    const ok = updateAnasayfa({
       heroTitle,
       heroDescription,
       heroVideoUrl: content.anasayfa.heroVideoUrl,
     });
-    showToast("✓ Ana sayfa içerikleri kaydedildi!");
+    showToast(
+      ok
+        ? "✓ Ana sayfa içerikleri kaydedildi!"
+        : "⚠ Kaydetme başarısız — tarayıcı depolaması dolu olabilir"
+    );
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,34 +130,46 @@ export function Admin() {
   };
 
   const handleSaveHizmetler = () => {
-    updateHizmetler({ services });
-    showToast("✓ Hizmetler kaydedildi!");
+    const ok = updateHizmetler({ services });
+    showToast(
+      ok
+        ? "✓ Hizmetler kaydedildi!"
+        : "⚠ Kaydetme başarısız — görseller çok büyük olabilir"
+    );
   };
 
   const handleSaveReferanslar = () => {
-    updateReferanslar({ projects });
-    showToast("✓ Referanslar kaydedildi!");
+    const ok = updateReferanslar({ projects });
+    showToast(
+      ok ? "✓ Referanslar kaydedildi!" : "⚠ Kaydetme başarısız"
+    );
   };
 
   const handleSaveHakkimizda = () => {
-    updateHakkimizda({ aboutText: aboutContent });
-    showToast("✓ Hakkımızda içerikleri kaydedildi!");
+    const ok = updateHakkimizda({ aboutText: aboutContent });
+    showToast(
+      ok ? "✓ Hakkımızda içerikleri kaydedildi!" : "⚠ Kaydetme başarısız"
+    );
   };
 
   const handleSaveIletisim = () => {
-    updateIletisim({
+    const ok = updateIletisim({
       address: contactAddress,
       phone1: contactPhone1,
       phone2: contactPhone2,
       email1: contactEmail1,
       email2: contactEmail2,
     });
-    showToast("✓ İletişim bilgileri kaydedildi!");
+    showToast(
+      ok ? "✓ İletişim bilgileri kaydedildi!" : "⚠ Kaydetme başarısız"
+    );
   };
 
   const handleSaveSocial = () => {
-    updateSocialVisibility(socialVis);
-    showToast("✓ Sosyal medya ayarları kaydedildi!");
+    const ok = updateSocialVisibility(socialVis);
+    showToast(
+      ok ? "✓ Sosyal medya ayarları kaydedildi!" : "⚠ Kaydetme başarısız"
+    );
   };
 
   /* ═══════ HİZMET YARDIMCILARI ═══════ */
@@ -154,25 +208,27 @@ export function Admin() {
     setServices(newServices);
   };
 
-  // Local dosyadan görsel yükle: FileReader ile base64 data URL'ye çevir
-  const handleServiceImageFile = (
+  // Local dosyadan görsel yükle: canvas ile küçült → JPEG data URL
+  const handleServiceImageFile = async (
     index: number,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
+    // aynı dosyayı tekrar seçebilmek için input'u hemen sıfırla
+    e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       showToast("⚠ Lütfen bir görsel dosyası seçin");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
+    try {
+      const dataUrl = await fileToCompressedDataUrl(file);
       handleServiceImageChange(index, dataUrl);
-    };
-    reader.readAsDataURL(file);
-    // aynı dosyayı tekrar seçebilmek için input'u sıfırla
-    e.target.value = "";
+      showToast("✓ Görsel yüklendi (kaydetmeyi unutmayın)");
+    } catch (err) {
+      console.error("Görsel işleme hatası:", err);
+      showToast("⚠ Görsel işlenemedi, lütfen başka bir dosya deneyin");
+    }
   };
 
   const handleServiceFeatureChange = (serviceIndex: number, featureIndex: number, value: string) => {
