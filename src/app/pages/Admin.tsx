@@ -22,7 +22,8 @@ const setBi = (current: Bi, sub: "en" | "tr", value: string): Bi => ({
 async function fileToCompressedDataUrl(
   file: File,
   maxSize = 1600,
-  quality = 0.85
+  quality = 0.85,
+  format: "image/jpeg" | "image/png" = "image/jpeg"
 ): Promise<string> {
   const url = URL.createObjectURL(file);
   try {
@@ -44,7 +45,8 @@ async function fileToCompressedDataUrl(
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas context alınamadı");
     ctx.drawImage(img, 0, 0, cw, ch);
-    return canvas.toDataURL("image/jpeg", quality);
+    // PNG şeffaflığı korur ama daha büyük olur; JPEG şeffafsızı küçük tutar
+    return canvas.toDataURL(format, quality);
   } finally {
     URL.revokeObjectURL(url);
   }
@@ -312,6 +314,37 @@ export function Admin() {
     const newProjects = [...projects];
     newProjects[index] = { ...newProjects[index], year: value };
     setProjects(newProjects);
+  };
+
+  // Logo değiştir (string olarak, kaldırmak için boş string)
+  const handleProjectLogoChange = (index: number, value: string) => {
+    const newProjects = [...projects];
+    newProjects[index] = { ...newProjects[index], logo: value };
+    setProjects(newProjects);
+  };
+
+  // Referans logosunu yerel dosyadan yükle: canvas ile küçült → PNG (şeffaflık için)
+  const projectLogoRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const handleProjectLogoFile = async (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("⚠ Lütfen bir görsel dosyası seçin");
+      return;
+    }
+    try {
+      // Logo daha küçük ama şeffaflığı korumalı → PNG formatında çıktı
+      const dataUrl = await fileToCompressedDataUrl(file, 800, 1, "image/png");
+      handleProjectLogoChange(index, dataUrl);
+      showToast("✓ Logo yüklendi (kaydetmeyi unutmayın)");
+    } catch (err) {
+      console.error("Logo işleme hatası:", err);
+      showToast("⚠ Logo işlenemedi, lütfen başka bir dosya deneyin");
+    }
   };
 
   /* ═══════ ŞİFRE DEĞİŞTİRME ═══════ */
@@ -832,6 +865,73 @@ export function Admin() {
                         onChange={(e) => handleProjectYearChange(index, e.target.value)}
                         className="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 text-sm mb-1">Logo</label>
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-[#12487c] transition-colors"
+                        onClick={() => projectLogoRefs.current[index]?.click()}
+                      >
+                        <input
+                          ref={(el) => {
+                            projectLogoRefs.current[index] = el;
+                          }}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleProjectLogoFile(index, e)}
+                          className="hidden"
+                        />
+                        {project.logo ? (
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={project.logo}
+                              alt="Logo önizleme"
+                              className="w-20 h-20 object-contain rounded-md border border-gray-200 bg-white flex-shrink-0"
+                            />
+                            <div className="flex-1 text-left">
+                              <p className="text-[13px] text-green-600 font-medium mb-1">
+                                ✓ Logo yüklendi
+                              </p>
+                              <p className="text-[12px] text-gray-500">
+                                Değiştirmek için tıklayın
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleProjectLogoChange(index, "");
+                              }}
+                              className="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs"
+                            >
+                              Kaldır
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="py-3">
+                            <svg
+                              className="w-8 h-8 mx-auto mb-2 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <p className="text-gray-500 text-[13px]">
+                              Logo görseli seçmek için tıklayın
+                            </p>
+                            <p className="text-gray-400 text-[12px] mt-1">
+                              PNG, JPG, SVG • şeffaf arka planlı PNG önerilir
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

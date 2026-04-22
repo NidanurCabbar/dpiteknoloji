@@ -31,6 +31,8 @@ export interface ProjectData {
   client: Bi;
   project: Bi;
   year: string;
+  /** Müşteri/kurum logosu (data URL veya http(s) URL). Opsiyonel. */
+  logo?: string;
 }
 
 export interface AnasayfaContent {
@@ -239,6 +241,7 @@ function migrateProject(raw: any, fallback: ProjectData): ProjectData {
     client: toBi(raw?.client, fallback.client),
     project: toBi(raw?.project, fallback.project),
     year: typeof raw?.year === "string" ? raw.year : fallback.year,
+    logo: typeof raw?.logo === "string" ? raw.logo : fallback.logo,
   };
 }
 

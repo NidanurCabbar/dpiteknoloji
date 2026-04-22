@@ -16,6 +16,7 @@ export function Referanslar() {
   const references: Reference[] = content.referanslar.projects.map((p) => ({
     client: pickLang(p.client, lang),
     project: pickLang(p.project, lang),
+    logo: p.logo || undefined,
   }));
 
   return (
@@ -64,18 +65,18 @@ export function Referanslar() {
               {t("refs.section.subtitle")}
             </p>
           </FadeIn>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex flex-wrap justify-center gap-8">
             {references.map((ref, index) => (
               <FadeIn key={index} delay={index * 0.1}>
                 <div
-                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[220px]"
+                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[240px] w-[260px]"
                 >
-                  <div className="w-full h-20 flex items-center justify-center mb-4">
+                  <div className="w-full h-24 flex items-center justify-center mb-4">
                     {ref.logo ? (
                       <img
                         src={ref.logo}
                         alt={ref.client}
-                        className="max-h-20 max-w-full object-contain"
+                        className="max-h-24 max-w-full object-contain"
                       />
                     ) : (
                       <div
