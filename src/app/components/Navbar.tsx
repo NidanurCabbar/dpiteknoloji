@@ -90,7 +90,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setLang("en")}
-              aria-label="Switch to English"
+              aria-label={t("nav.lang.en.aria")}
               aria-pressed={lang === "en"}
               style={langBtnStyle(lang === "en")}
               onMouseEnter={(e) => {
@@ -111,7 +111,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setLang("tr")}
-              aria-label="Türkçeye geç"
+              aria-label={t("nav.lang.tr.aria")}
               aria-pressed={lang === "tr"}
               style={langBtnStyle(lang === "tr")}
               onMouseEnter={(e) => {

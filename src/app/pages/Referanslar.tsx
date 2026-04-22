@@ -1,7 +1,7 @@
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useLanguage } from "../contexts/LanguageContext";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 
 interface Reference {
   client: string;
@@ -14,8 +14,8 @@ export function Referanslar() {
   const { content } = useSiteContent();
 
   const references: Reference[] = content.referanslar.projects.map((p) => ({
-    client: p.client[lang],
-    project: p.project[lang],
+    client: pickLang(p.client, lang),
+    project: pickLang(p.project, lang),
   }));
 
   return (

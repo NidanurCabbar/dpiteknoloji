@@ -12,6 +12,8 @@ const en: Dict = {
   "nav.services": "SERVICES",
   "nav.references": "REFERENCES",
   "nav.contact": "CONTACT",
+  "nav.lang.en.aria": "Switch to English",
+  "nav.lang.tr.aria": "Switch to Turkish",
 
   // TopBar
   "top.address": "Atatürk Neighborhood, Teknoloji Avenue No:123, Çankaya / ANKARA",
@@ -190,6 +192,8 @@ const tr: Dict = {
   "nav.services": "HİZMETLER",
   "nav.references": "REFERANSLAR",
   "nav.contact": "İLETİŞİM",
+  "nav.lang.en.aria": "İngilizceye geç",
+  "nav.lang.tr.aria": "Türkçeye geç",
 
   // TopBar
   "top.address": "Atatürk Mah. Teknoloji Cad. No:123, Çankaya / ANKARA",

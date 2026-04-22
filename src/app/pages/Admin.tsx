@@ -3,8 +3,14 @@ import { useAuth } from "../contexts/AuthContext";
 import { useSiteContent, ServiceData, ProjectData, SocialVisibility, Bi } from "../contexts/SiteContentContext";
 import { useNavigate } from "react-router";
 
-// Tek bir değer ile hem en hem tr'yi eş zamanlı doldurur
+// Yeni bir öğe eklerken placeholder olarak her iki dili aynı başlangıç metniyle doldur
 const bi = (v: string): Bi => ({ en: v, tr: v });
+
+// Bir Bi objesinde sadece belirli bir dili güncellemek için yardımcı
+const setBi = (current: Bi, sub: "en" | "tr", value: string): Bi => ({
+  ...current,
+  [sub]: value,
+});
 
 /**
  * Görseli canvas üzerinde küçültüp JPEG olarak sıkıştırır.
@@ -190,14 +196,18 @@ export function Admin() {
     setServices(services.filter((_, i) => i !== index));
   };
 
-  // Bi alanları (title/description) - tek input her iki dili eş zamanlı günceller
+  // Bi alanları (title/description) - aktif dilin değerini günceller
   const handleServiceBiChange = (
     index: number,
     field: "title" | "description",
+    sub: "en" | "tr",
     value: string
   ) => {
     const newServices = [...services];
-    newServices[index] = { ...newServices[index], [field]: bi(value) };
+    newServices[index] = {
+      ...newServices[index],
+      [field]: setBi(newServices[index][field], sub, value),
+    };
     setServices(newServices);
   };
 
@@ -231,12 +241,17 @@ export function Admin() {
     }
   };
 
-  const handleServiceFeatureChange = (serviceIndex: number, featureIndex: number, value: string) => {
+  const handleServiceFeatureChange = (
+    serviceIndex: number,
+    featureIndex: number,
+    sub: "en" | "tr",
+    value: string
+  ) => {
     const newServices = [...services];
     newServices[serviceIndex] = {
       ...newServices[serviceIndex],
       features: newServices[serviceIndex].features.map((f, i) =>
-        i === featureIndex ? bi(value) : f
+        i === featureIndex ? setBi(f, sub, value) : f
       ),
     };
     setServices(newServices);
@@ -277,10 +292,18 @@ export function Admin() {
     setProjects(projects.filter((_, i) => i !== index));
   };
 
-  // Bi alanları (client/project) - tek input her iki dili eş zamanlı günceller
-  const handleProjectBiChange = (index: number, field: "client" | "project", value: string) => {
+  // Bi alanları (client/project) - aktif dilin değerini günceller
+  const handleProjectBiChange = (
+    index: number,
+    field: "client" | "project",
+    sub: "en" | "tr",
+    value: string
+  ) => {
     const newProjects = [...projects];
-    newProjects[index] = { ...newProjects[index], [field]: bi(value) };
+    newProjects[index] = {
+      ...newProjects[index],
+      [field]: setBi(newProjects[index][field], sub, value),
+    };
     setProjects(newProjects);
   };
 
@@ -414,22 +437,52 @@ export function Admin() {
             <div className="space-y-6">
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">Hero Başlık</label>
-                <input
-                  type="text"
-                  value={heroTitle.tr}
-                  onChange={(e) => setHeroTitle(bi(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-xs text-gray-500">🇹🇷 Türkçe</span>
+                    <input
+                      type="text"
+                      value={heroTitle.tr}
+                      onChange={(e) => setHeroTitle(setBi(heroTitle, "tr", e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">🇬🇧 English</span>
+                    <input
+                      type="text"
+                      value={heroTitle.en}
+                      onChange={(e) => setHeroTitle(setBi(heroTitle, "en", e.target.value))}
+                      placeholder="Boş bırakılırsa Türkçe kullanılır"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">Hero Açıklama</label>
-                <textarea
-                  value={heroDescription.tr}
-                  onChange={(e) => setHeroDescription(bi(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                  rows={4}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-xs text-gray-500">🇹🇷 Türkçe</span>
+                    <textarea
+                      value={heroDescription.tr}
+                      onChange={(e) => setHeroDescription(setBi(heroDescription, "tr", e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                      rows={4}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">🇬🇧 English</span>
+                    <textarea
+                      value={heroDescription.en}
+                      onChange={(e) => setHeroDescription(setBi(heroDescription, "en", e.target.value))}
+                      placeholder="Boş bırakılırsa Türkçe kullanılır"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                      rows={4}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -511,24 +564,56 @@ export function Admin() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-gray-700 text-sm mb-2">Başlık</label>
-                      <input
-                        type="text"
-                        value={service.title.tr}
-                        onChange={(e) => handleServiceBiChange(index, "title", e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <span className="text-xs text-gray-500">🇹🇷 TR</span>
+                          <input
+                            type="text"
+                            value={service.title.tr}
+                            onChange={(e) => handleServiceBiChange(index, "title", "tr", e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500">🇬🇧 EN</span>
+                          <input
+                            type="text"
+                            value={service.title.en}
+                            onChange={(e) => handleServiceBiChange(index, "title", "en", e.target.value)}
+                            placeholder="Boş bırakılırsa TR kullanılır"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-gray-700 text-sm mb-2">Açıklama</label>
-                      <textarea
-                        value={service.description.tr}
-                        onChange={(e) =>
-                          handleServiceBiChange(index, "description", e.target.value)
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                        rows={3}
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <span className="text-xs text-gray-500">🇹🇷 TR</span>
+                          <textarea
+                            value={service.description.tr}
+                            onChange={(e) =>
+                              handleServiceBiChange(index, "description", "tr", e.target.value)
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                            rows={3}
+                          />
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500">🇬🇧 EN</span>
+                          <textarea
+                            value={service.description.en}
+                            onChange={(e) =>
+                              handleServiceBiChange(index, "description", "en", e.target.value)
+                            }
+                            placeholder="Boş bırakılırsa TR kullanılır"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                            rows={3}
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     <div>
@@ -609,16 +694,29 @@ export function Admin() {
                           + Özellik Ekle
                         </button>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {service.features.map((feature, featureIndex) => (
-                          <div key={featureIndex} className="flex gap-2">
+                          <div
+                            key={featureIndex}
+                            className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center"
+                          >
                             <input
                               type="text"
                               value={feature.tr}
+                              placeholder="🇹🇷 TR"
                               onChange={(e) =>
-                                handleServiceFeatureChange(index, featureIndex, e.target.value)
+                                handleServiceFeatureChange(index, featureIndex, "tr", e.target.value)
                               }
-                              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                            />
+                            <input
+                              type="text"
+                              value={feature.en}
+                              placeholder="🇬🇧 EN (boşsa TR kullanılır)"
+                              onChange={(e) =>
+                                handleServiceFeatureChange(index, featureIndex, "en", e.target.value)
+                              }
+                              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
                             />
                             <button
                               onClick={() => handleRemoveServiceFeature(index, featureIndex)}
@@ -681,25 +779,49 @@ export function Admin() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-gray-700 text-sm mb-1">Müşteri</label>
-                      <input
-                        type="text"
-                        value={project.client.tr}
-                        onChange={(e) => handleProjectBiChange(index, "client", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
-                      />
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-gray-700 text-sm mb-1">Müşteri 🇹🇷 TR</label>
+                        <input
+                          type="text"
+                          value={project.client.tr}
+                          onChange={(e) => handleProjectBiChange(index, "client", "tr", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 text-sm mb-1">Müşteri 🇬🇧 EN</label>
+                        <input
+                          type="text"
+                          value={project.client.en}
+                          placeholder="Boşsa TR kullanılır"
+                          onChange={(e) => handleProjectBiChange(index, "client", "en", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
+                        />
+                      </div>
                     </div>
 
-                    <div>
-                      <label className="block text-gray-700 text-sm mb-1">Proje</label>
-                      <input
-                        type="text"
-                        value={project.project.tr}
-                        onChange={(e) => handleProjectBiChange(index, "project", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-gray-700 text-sm mb-1">Proje 🇹🇷 TR</label>
+                        <input
+                          type="text"
+                          value={project.project.tr}
+                          onChange={(e) => handleProjectBiChange(index, "project", "tr", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 text-sm mb-1">Proje 🇬🇧 EN</label>
+                        <input
+                          type="text"
+                          value={project.project.en}
+                          placeholder="Boşsa TR kullanılır"
+                          onChange={(e) => handleProjectBiChange(index, "project", "en", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
+                        />
+                      </div>
                     </div>
 
                     <div>
@@ -708,7 +830,7 @@ export function Admin() {
                         type="text"
                         value={project.year}
                         onChange={(e) => handleProjectYearChange(index, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
+                        className="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
                       />
                     </div>
                   </div>
@@ -737,12 +859,30 @@ export function Admin() {
             <div className="space-y-6">
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">Şirket Tanıtımı</label>
-                <textarea
-                  value={aboutContent.tr}
-                  onChange={(e) => setAboutContent(bi(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                  rows={6}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-xs text-gray-500">🇹🇷 Türkçe</span>
+                    <textarea
+                      value={aboutContent.tr}
+                      onChange={(e) => setAboutContent(setBi(aboutContent, "tr", e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                      rows={8}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">🇬🇧 English</span>
+                    <textarea
+                      value={aboutContent.en}
+                      onChange={(e) => setAboutContent(setBi(aboutContent, "en", e.target.value))}
+                      placeholder="Boş bırakılırsa Türkçe kullanılır"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                      rows={8}
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  İpucu: Paragrafları ayırmak için boş bir satır bırakın.
+                </p>
               </div>
 
               <button
@@ -765,12 +905,27 @@ export function Admin() {
             <div className="space-y-6">
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">Adres</label>
-                <textarea
-                  value={contactAddress.tr}
-                  onChange={(e) => setContactAddress(bi(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
-                  rows={3}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-xs text-gray-500">🇹🇷 Türkçe</span>
+                    <textarea
+                      value={contactAddress.tr}
+                      onChange={(e) => setContactAddress(setBi(contactAddress, "tr", e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">🇬🇧 English</span>
+                    <textarea
+                      value={contactAddress.en}
+                      onChange={(e) => setContactAddress(setBi(contactAddress, "en", e.target.value))}
+                      placeholder="Boş bırakılırsa Türkçe kullanılır"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c]"
+                      rows={3}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6">

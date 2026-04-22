@@ -5,17 +5,17 @@ import bgImage4 from "figma:asset/6889dc6ba9f2c3f5c40b2c63aa751ed5e5c4732a.png";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useLanguage } from "../contexts/LanguageContext";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 
 export function Hizmetler() {
   const { t, lang } = useLanguage();
   const { content } = useSiteContent();
 
   const services = content.hizmetler.services.map((s) => ({
-    title: s.title[lang],
+    title: pickLang(s.title, lang),
     image: s.image,
-    features: s.features.map((f) => f[lang]),
-    description: s.description[lang],
+    features: s.features.map((f) => pickLang(f, lang)),
+    description: pickLang(s.description, lang),
   }));
 
   return (

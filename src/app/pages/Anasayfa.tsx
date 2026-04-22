@@ -2,7 +2,7 @@ import { ServiceCard } from "../components/ServiceCard";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useRef, useEffect } from "react";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export function Anasayfa() {
@@ -26,13 +26,13 @@ export function Anasayfa() {
   ];
 
   const services = content.hizmetler.services.slice(0, 3).map((s, i) => ({
-    title: s.title[lang],
-    description: s.description[lang],
+    title: pickLang(s.title, lang),
+    description: pickLang(s.description, lang),
     videoThumbnail: s.image || fallbackThumbnails[i] || fallbackThumbnails[0],
   }));
 
-  const heroTitleText = content.anasayfa.heroTitle[lang];
-  const heroDescriptionText = content.anasayfa.heroDescription[lang];
+  const heroTitleText = pickLang(content.anasayfa.heroTitle, lang);
+  const heroDescriptionText = pickLang(content.anasayfa.heroDescription, lang);
 
   // Başlığın son kelimesini accent rengiyle vurgula (önceki tasarıma uygun)
   const trimmedTitle = heroTitleText.trim();

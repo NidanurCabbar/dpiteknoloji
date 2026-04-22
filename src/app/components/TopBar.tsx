@@ -1,5 +1,5 @@
 import { Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
 const brandColors: Record<string, string> = {
@@ -18,7 +18,7 @@ export function TopBar() {
   const vis = content.socialVisibility;
   const { lang } = useLanguage();
   const { phone1, address } = content.iletisim;
-  const addressText = address[lang];
+  const addressText = pickLang(address, lang);
 
   const allSocials = [
     { Icon: Facebook, href: "#", label: "Facebook", key: "facebook" as const },

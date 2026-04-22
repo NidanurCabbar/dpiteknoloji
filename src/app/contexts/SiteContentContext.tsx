@@ -6,6 +6,20 @@ import heroDefault from "../../imports/hero_firefly_174060.mp4";
 /* ─── Tip tanımları ─── */
 export type Bi = { en: string; tr: string };
 
+/**
+ * Bi değerinden aktif dil için metin seçer.
+ * Aktif dil boşsa Türkçe'ye, o da boşsa İngilizce'ye düşer.
+ * Böylece admin sadece TR doldurmuşsa EN sitede de TR metni görünür (boş kalmaz).
+ */
+export function pickLang(b: Bi | undefined, lang: "en" | "tr"): string {
+  if (!b) return "";
+  const primary = (b[lang] ?? "").trim();
+  if (primary) return b[lang];
+  const tr = (b.tr ?? "").trim();
+  if (tr) return b.tr;
+  return b.en ?? "";
+}
+
 export interface ServiceData {
   title: Bi;
   description: Bi;

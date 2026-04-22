@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
 const brandColors: Record<string, string> = {
@@ -20,7 +20,7 @@ export function Footer() {
   const vis = content.socialVisibility;
   const { t, lang } = useLanguage();
   const { address, phone1, email1 } = content.iletisim;
-  const addressText = address[lang];
+  const addressText = pickLang(address, lang);
 
   const quickLinks = [
     { labelKey: "nav.home", path: "/" },

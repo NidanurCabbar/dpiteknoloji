@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router";
 import bgImage from "figma:asset/ed053a64549a21b8e2a9e3260dcdb7a6c82d99f3.png";
 import { FadeIn } from "../components/FadeIn";
 import { useLanguage } from "../contexts/LanguageContext";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 
 export function Iletisim() {
   const { t, lang } = useLanguage();
@@ -60,7 +60,7 @@ export function Iletisim() {
   }, [searchParams, lang]);
 
   // Admin panelinde düzenlenen adresi kullan (satır kırmalarını boşluk yaparak tek satır haritaya ver)
-  const addressMultiline = content.iletisim.address[lang];
+  const addressMultiline = pickLang(content.iletisim.address, lang);
   const address = addressMultiline.replace(/\s*\n\s*/g, ", ");
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 

@@ -2,12 +2,12 @@ import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import bgImage from "figma:asset/0375b7736794914741acd8ea38b508a023ca321b.png";
 import { useLanguage } from "../contexts/LanguageContext";
-import { useSiteContent } from "../contexts/SiteContentContext";
+import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 
 export function Hakkimizda() {
   const { t, lang } = useLanguage();
   const { content } = useSiteContent();
-  const aboutText = content.hakkimizda.aboutText[lang];
+  const aboutText = pickLang(content.hakkimizda.aboutText, lang);
   // Admin panelindeki şirket tanıtımı metnini paragraflara böl (boş satırlarda)
   const aboutParagraphs = aboutText
     .split(/\n\s*\n+/)
