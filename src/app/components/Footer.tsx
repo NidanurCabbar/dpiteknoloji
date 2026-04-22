@@ -18,6 +18,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
+  const links = content.socialLinks;
   const { t, lang } = useLanguage();
   const { address, phone1, email1 } = content.iletisim;
   const addressText = pickLang(address, lang);
@@ -37,14 +38,16 @@ export function Footer() {
   ];
 
   const allSocials = [
-    { Icon: Facebook, href: "#", label: "Facebook", key: "facebook" as const },
-    { Icon: Instagram, href: "#", label: "Instagram", key: "instagram" as const },
-    { Icon: Linkedin, href: "#", label: "LinkedIn", key: "linkedin" as const },
-    { Icon: Twitter, href: "#", label: "Twitter", key: "twitter" as const },
-    { Icon: Youtube, href: "#", label: "YouTube", key: "youtube" as const },
+    { Icon: Facebook, label: "Facebook", key: "facebook" as const },
+    { Icon: Instagram, label: "Instagram", key: "instagram" as const },
+    { Icon: Linkedin, label: "LinkedIn", key: "linkedin" as const },
+    { Icon: Twitter, label: "Twitter", key: "twitter" as const },
+    { Icon: Youtube, label: "YouTube", key: "youtube" as const },
   ];
 
-  const socials = allSocials.filter((s) => vis[s.key]);
+  const socials = allSocials
+    .filter((s) => vis[s.key] && links[s.key]?.trim())
+    .map((s) => ({ ...s, href: links[s.key] }));
 
   return (
     <footer style={{ backgroundColor: "#0a1e33" }}>
@@ -80,6 +83,8 @@ export function Footer() {
               <a
                 key={label}
                 href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 style={{
                   width: 36,

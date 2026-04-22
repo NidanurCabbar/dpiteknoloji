@@ -69,6 +69,14 @@ export interface SocialVisibility {
   youtube: boolean;
 }
 
+export interface SocialLinks {
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  twitter: string;
+  youtube: string;
+}
+
 export interface SiteContent {
   anasayfa: AnasayfaContent;
   hizmetler: HizmetlerContent;
@@ -76,6 +84,7 @@ export interface SiteContent {
   hakkimizda: HakkimizdaContent;
   iletisim: IletisimContent;
   socialVisibility: SocialVisibility;
+  socialLinks: SocialLinks;
 }
 
 /* ─── Varsayılan veriler (iki dilli) ─── */
@@ -191,6 +200,13 @@ const defaultContent: SiteContent = {
     twitter: false,
     youtube: false,
   },
+  socialLinks: {
+    facebook: "",
+    instagram: "",
+    linkedin: "",
+    twitter: "",
+    youtube: "",
+  },
 };
 
 /* ─── Context ─── */
@@ -204,6 +220,7 @@ interface SiteContentContextType {
   updateHakkimizda: (data: HakkimizdaContent) => boolean;
   updateIletisim: (data: IletisimContent) => boolean;
   updateSocialVisibility: (data: SocialVisibility) => boolean;
+  updateSocialLinks: (data: SocialLinks) => boolean;
   setHeroVideoFile: (file: File) => void;
 }
 
@@ -308,6 +325,7 @@ function loadFromStorage(): SiteContent {
             : defaultContent.iletisim.email2,
       },
       socialVisibility: { ...defaultContent.socialVisibility, ...(p?.socialVisibility ?? {}) },
+      socialLinks: { ...defaultContent.socialLinks, ...(p?.socialLinks ?? {}) },
     };
   } catch (e) {
     console.warn("SiteContent localStorage parse hatası:", e);
@@ -375,6 +393,12 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     return saveToStorage(updated);
   };
 
+  const updateSocialLinks = (data: SocialLinks): boolean => {
+    const updated = { ...content, socialLinks: data };
+    setContent(updated);
+    return saveToStorage(updated);
+  };
+
   const setHeroVideoFile = (file: File) => {
     const blobUrl = URL.createObjectURL(file);
     setHeroVideoSrc(blobUrl);
@@ -392,6 +416,7 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
         updateHakkimizda,
         updateIletisim,
         updateSocialVisibility,
+        updateSocialLinks,
         setHeroVideoFile,
       }}
     >

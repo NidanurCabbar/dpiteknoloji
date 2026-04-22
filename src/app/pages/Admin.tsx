@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useSiteContent, ServiceData, ProjectData, SocialVisibility, Bi } from "../contexts/SiteContentContext";
+import { useSiteContent, ServiceData, ProjectData, SocialVisibility, SocialLinks, Bi } from "../contexts/SiteContentContext";
 import { useNavigate } from "react-router";
 
 // Yeni bir öğe eklerken placeholder olarak her iki dili aynı başlangıç metniyle doldur
@@ -54,7 +54,7 @@ async function fileToCompressedDataUrl(
 
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
-  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, setHeroVideoFile } = useSiteContent();
+  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, updateSocialLinks, setHeroVideoFile } = useSiteContent();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "hesap">("anasayfa");
 
@@ -91,6 +91,7 @@ export function Admin() {
 
   /* ─── Sosyal Medya state ─── */
   const [socialVis, setSocialVis] = useState<SocialVisibility>(content.socialVisibility);
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>(content.socialLinks);
 
   /* ─── Hesap state ─── */
   const [currentPassword, setCurrentPassword] = useState("");
@@ -174,9 +175,12 @@ export function Admin() {
   };
 
   const handleSaveSocial = () => {
-    const ok = updateSocialVisibility(socialVis);
+    const ok1 = updateSocialVisibility(socialVis);
+    const ok2 = updateSocialLinks(socialLinks);
     showToast(
-      ok ? "✓ Sosyal medya ayarları kaydedildi!" : "⚠ Kaydetme başarısız"
+      ok1 && ok2
+        ? "✓ Sosyal medya ayarları kaydedildi!"
+        : "⚠ Kaydetme başarısız"
     );
   };
 
@@ -1091,30 +1095,42 @@ export function Admin() {
               Hangi sosyal medya ikonlarının sitede görünür olacağını seçin.
             </p>
 
-            <div className="space-y-4 max-w-[500px]">
+            <div className="space-y-4 max-w-[640px]">
               {([
-                { key: "instagram" as const, label: "Instagram" },
-                { key: "linkedin" as const, label: "LinkedIn" },
-                { key: "facebook" as const, label: "Facebook" },
-                { key: "twitter" as const, label: "Twitter / X" },
-                { key: "youtube" as const, label: "YouTube" },
-              ]).map(({ key, label }) => (
-                <label
+                { key: "instagram" as const, label: "Instagram", placeholder: "https://instagram.com/kullaniciadi" },
+                { key: "linkedin" as const, label: "LinkedIn", placeholder: "https://linkedin.com/company/firma" },
+                { key: "facebook" as const, label: "Facebook", placeholder: "https://facebook.com/sayfa" },
+                { key: "twitter" as const, label: "Twitter / X", placeholder: "https://x.com/kullaniciadi" },
+                { key: "youtube" as const, label: "YouTube", placeholder: "https://youtube.com/@kanal" },
+              ]).map(({ key, label, placeholder }) => (
+                <div
                   key={key}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <span className="text-[15px] text-gray-700 font-medium">{label}</span>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={socialVis[key]}
-                      onChange={(e) => setSocialVis({ ...socialVis, [key]: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-[#12487c] transition-colors" />
-                    <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[15px] text-gray-700 font-medium">{label}</span>
+                    <label className="relative cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={socialVis[key]}
+                        onChange={(e) => setSocialVis({ ...socialVis, [key]: e.target.checked })}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-[#12487c] transition-colors" />
+                      <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
+                    </label>
                   </div>
-                </label>
+                  <input
+                    type="url"
+                    value={socialLinks[key]}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, [key]: e.target.value })}
+                    placeholder={placeholder}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#12487c] text-sm"
+                  />
+                  <p className="text-[12px] text-gray-500 mt-1.5">
+                    Link boş bırakılırsa ikon görünür olsa bile sitede gösterilmez.
+                  </p>
+                </div>
               ))}
             </div>
 

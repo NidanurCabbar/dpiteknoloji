@@ -16,19 +16,23 @@ const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 export function TopBar() {
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
+  const links = content.socialLinks;
   const { lang } = useLanguage();
   const { phone1, address } = content.iletisim;
   const addressText = pickLang(address, lang);
 
   const allSocials = [
-    { Icon: Facebook, href: "#", label: "Facebook", key: "facebook" as const },
-    { Icon: Instagram, href: "#", label: "Instagram", key: "instagram" as const },
-    { Icon: Linkedin, href: "#", label: "LinkedIn", key: "linkedin" as const },
-    { Icon: Twitter, href: "#", label: "Twitter", key: "twitter" as const },
-    { Icon: Youtube, href: "#", label: "YouTube", key: "youtube" as const },
+    { Icon: Facebook, label: "Facebook", key: "facebook" as const },
+    { Icon: Instagram, label: "Instagram", key: "instagram" as const },
+    { Icon: Linkedin, label: "LinkedIn", key: "linkedin" as const },
+    { Icon: Twitter, label: "Twitter", key: "twitter" as const },
+    { Icon: Youtube, label: "YouTube", key: "youtube" as const },
   ];
 
-  const visibleSocials = allSocials.filter((s) => vis[s.key]);
+  // Görünür + URL girilmiş olanlar
+  const visibleSocials = allSocials
+    .filter((s) => vis[s.key] && links[s.key]?.trim())
+    .map((s) => ({ ...s, href: links[s.key] }));
 
   return (
     <div
@@ -77,6 +81,8 @@ export function TopBar() {
               <a
                 key={label}
                 href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 style={{
                   width: 32,
