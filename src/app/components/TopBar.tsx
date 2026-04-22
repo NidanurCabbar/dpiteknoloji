@@ -10,10 +10,15 @@ const brandColors: Record<string, string> = {
   youtube: "#FF0000",
 };
 
+// Telefon numarasını href için temizler (boşluk, parantez, tire kaldırır)
+const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
 export function TopBar() {
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
-  const { t } = useLanguage();
+  const { lang } = useLanguage();
+  const { phone1, address } = content.iletisim;
+  const addressText = address[lang];
 
   const allSocials = [
     { Icon: Facebook, href: "#", label: "Facebook", key: "facebook" as const },
@@ -53,15 +58,15 @@ export function TopBar() {
         {/* Sol: iletişim bilgileri */}
         <div style={{ display: "flex", alignItems: "center", gap: 24, color: "#ffffff" }}>
           <a
-            href="tel:+903121234567"
+            href={telHref(phone1)}
             style={{ display: "flex", alignItems: "center", gap: 8, color: "#ffffff", textDecoration: "none" }}
           >
             <Phone size={16} color="#ffffff" />
-            <span>+90 (312) 123 45 67</span>
+            <span>{phone1}</span>
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#ffffff" }}>
             <MapPin size={16} color="#ffffff" />
-            <span>{t("top.address")}</span>
+            <span>{addressText}</span>
           </div>
         </div>
 

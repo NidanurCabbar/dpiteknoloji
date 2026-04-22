@@ -11,11 +11,16 @@ const brandColors: Record<string, string> = {
   youtube: "#FF0000",
 };
 
+// Telefon numarasını href için temizler
+const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const { content } = useSiteContent();
   const vis = content.socialVisibility;
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { address, phone1, email1 } = content.iletisim;
+  const addressText = address[lang];
 
   const quickLinks = [
     { labelKey: "nav.home", path: "/" },
@@ -185,19 +190,19 @@ export function Footer() {
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <MapPin size={18} color="var(--dpi-accent)" style={{ flexShrink: 0, marginTop: 2 }} />
               <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-line" }}>
-                {t("footer.address")}
+                {addressText}
               </span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <Phone size={18} color="var(--dpi-accent)" style={{ flexShrink: 0 }} />
-              <a href="tel:+903121234567" style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, textDecoration: "none" }}>
-                +90 (312) 123 45 67
+              <a href={telHref(phone1)} style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, textDecoration: "none" }}>
+                {phone1}
               </a>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <Mail size={18} color="var(--dpi-accent)" style={{ flexShrink: 0 }} />
-              <a href="mailto:info@dpiteknoloji.com.tr" style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, textDecoration: "none" }}>
-                info@dpiteknoloji.com.tr
+              <a href={`mailto:${email1}`} style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, textDecoration: "none" }}>
+                {email1}
               </a>
             </div>
           </div>
