@@ -77,6 +77,19 @@ export interface SocialLinks {
   youtube: string;
 }
 
+/** İletişim formundan gelen mesajlar — admin panelinde gösterilir. */
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  createdAt: string; // ISO
+  read: boolean;
+  emailSent?: boolean; // Web3Forms başarılı mı
+}
+
 export interface SiteContent {
   anasayfa: AnasayfaContent;
   hizmetler: HizmetlerContent;
@@ -222,12 +235,18 @@ interface SiteContentContextType {
   updateSocialVisibility: (data: SocialVisibility) => boolean;
   updateSocialLinks: (data: SocialLinks) => boolean;
   setHeroVideoFile: (file: File) => void;
+  // İletişim mesajları
+  messages: ContactMessage[];
+  addMessage: (m: Omit<ContactMessage, "id" | "createdAt" | "read">) => ContactMessage;
+  markMessageRead: (id: string, read?: boolean) => void;
+  deleteMessage: (id: string) => void;
 }
 
 const SiteContentContext = createContext<SiteContentContextType | undefined>(undefined);
 
 const STORAGE_KEY = "dpi_site_content";
 const VIDEO_STORAGE_KEY = "dpi_hero_video";
+const MESSAGES_KEY = "dpi_contact_messages";
 
 /* ─── Migration helpers: eski string şemayı Bi'ye çevir ─── */
 function toBi(v: any, fallback: Bi): Bi {
@@ -399,6 +418,53 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     return saveToStorage(updated);
   };
 
+  /* ─── İletişim mesajları ─── */
+  const [messages, setMessages] = useState<ContactMessage[]>(() => {
+    try {
+      const raw = localStorage.getItem(MESSAGES_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const persistMessages = (list: ContactMessage[]) => {
+    try {
+      localStorage.setItem(MESSAGES_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.error("Mesajlar kaydedilemedi:", e);
+    }
+  };
+
+  const addMessage = (
+    m: Omit<ContactMessage, "id" | "createdAt" | "read">
+  ): ContactMessage => {
+    const full: ContactMessage = {
+      ...m,
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      createdAt: new Date().toISOString(),
+      read: false,
+    };
+    const next = [full, ...messages];
+    setMessages(next);
+    persistMessages(next);
+    return full;
+  };
+
+  const markMessageRead = (id: string, read = true) => {
+    const next = messages.map((m) => (m.id === id ? { ...m, read } : m));
+    setMessages(next);
+    persistMessages(next);
+  };
+
+  const deleteMessage = (id: string) => {
+    const next = messages.filter((m) => m.id !== id);
+    setMessages(next);
+    persistMessages(next);
+  };
+
   const setHeroVideoFile = (file: File) => {
     const blobUrl = URL.createObjectURL(file);
     setHeroVideoSrc(blobUrl);
@@ -418,6 +484,10 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
         updateSocialVisibility,
         updateSocialLinks,
         setHeroVideoFile,
+        messages,
+        addMessage,
+        markMessageRead,
+        deleteMessage,
       }}
     >
       {children}

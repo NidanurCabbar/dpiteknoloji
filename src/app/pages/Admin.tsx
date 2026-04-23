@@ -54,9 +54,10 @@ async function fileToCompressedDataUrl(
 
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
-  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, updateSocialLinks, setHeroVideoFile } = useSiteContent();
+  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, updateSocialLinks, setHeroVideoFile, messages, markMessageRead, deleteMessage } = useSiteContent();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "hesap">("anasayfa");
+  const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "mesajlar" | "hesap">("anasayfa");
+  const unreadCount = messages.filter((m) => !m.read).length;
 
   /* ─── Toast bildirimi ─── */
   const [toast, setToast] = useState<string | null>(null);
@@ -440,6 +441,7 @@ export function Admin() {
               { key: "hakkimizda", label: "Hakkımızda" },
               { key: "iletisim", label: "İletişim" },
               { key: "sosyal", label: "Sosyal Medya" },
+              { key: "mesajlar", label: unreadCount > 0 ? `Mesajlar (${unreadCount})` : "Mesajlar" },
               { key: "hesap", label: "Hesap Ayarları" },
             ].map((tab) => (
               <button
@@ -1143,6 +1145,100 @@ export function Admin() {
                 Değişiklikleri Kaydet
               </button>
             </div>
+          </div>
+        )}
+
+        {/* ═══ Mesajlar ═══ */}
+        {activeTab === "mesajlar" && (
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-[24px]" style={{ color: "#12487c" }}>
+                Gelen Mesajlar
+              </h2>
+              <span className="text-sm text-gray-500">
+                Toplam {messages.length} mesaj • {unreadCount} okunmamış
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 mb-6">
+              İletişim formundan gelen mesajlar burada listelenir. Ayrıca <strong>info@dpiteknoloji.com.tr</strong> adresine e-posta olarak da iletilir (Web3Forms anahtarı tanımlıysa).
+            </p>
+            {messages.length === 0 ? (
+              <div className="text-center py-16 text-gray-500 border-2 border-dashed border-gray-200 rounded-lg">
+                Henüz mesaj yok.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`border rounded-lg p-5 transition-colors ${
+                      m.read ? "bg-gray-50 border-gray-200" : "bg-white border-[#12487c]"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {!m.read && (
+                            <span
+                              className="inline-block w-2 h-2 rounded-full"
+                              style={{ backgroundColor: "#e8860c" }}
+                            />
+                          )}
+                          <h3 className="font-semibold text-[16px]" style={{ color: "#12487c" }}>
+                            {m.subject || "(Konu yok)"}
+                          </h3>
+                        </div>
+                        <div className="text-sm text-gray-700">
+                          <strong>{m.name}</strong>
+                          {" • "}
+                          <a href={`mailto:${m.email}`} className="text-blue-600 hover:underline">
+                            {m.email}
+                          </a>
+                          {m.phone && (
+                            <>
+                              {" • "}
+                              <a href={`tel:${m.phone}`} className="text-blue-600 hover:underline">
+                                {m.phone}
+                              </a>
+                            </>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {new Date(m.createdAt).toLocaleString("tr-TR")}
+                          {" • "}
+                          {m.emailSent ? (
+                            <span className="text-green-600">📧 E-posta gönderildi</span>
+                          ) : (
+                            <span className="text-gray-500">📭 Sadece panelde</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => markMessageRead(m.id, !m.read)}
+                          className="px-3 py-1.5 text-xs border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                        >
+                          {m.read ? "Okunmadı işaretle" : "Okundu işaretle"}
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm("Bu mesajı silmek istediğinize emin misiniz?")) {
+                              deleteMessage(m.id);
+                            }
+                          }}
+                          className="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded hover:bg-red-50 transition-colors"
+                        >
+                          Sil
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-800 whitespace-pre-line bg-white rounded p-3 border border-gray-100">
+                      {m.message}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

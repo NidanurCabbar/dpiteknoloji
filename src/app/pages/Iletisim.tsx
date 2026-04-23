@@ -4,10 +4,12 @@ import bgImage from "figma:asset/ed053a64549a21b8e2a9e3260dcdb7a6c82d99f3.png";
 import { FadeIn } from "../components/FadeIn";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
+import { sendContactEmail } from "../lib/sendContactEmail";
 
 export function Iletisim() {
   const { t, lang } = useLanguage();
-  const { content } = useSiteContent();
+  const { content, addMessage } = useSiteContent();
+  const [submitting, setSubmitting] = useState(false);
   const [searchParams] = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -64,10 +66,24 @@ export function Iletisim() {
   const address = addressMultiline.replace(/\s*\n\s*/g, ", ");
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(t("contact.form.success"));
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const emailSent = await sendContactEmail(formData);
+      addMessage({ ...formData, emailSent });
+      alert(t("contact.form.success"));
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err) {
+      console.error("Form gönderim hatası:", err);
+      // Yine de admin paneline kaydet
+      try { addMessage({ ...formData, emailSent: false }); } catch {}
+      alert(t("contact.form.success"));
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -209,7 +225,8 @@ export function Iletisim() {
 
                   <button
                     type="submit"
-                    className="w-full text-white py-4 rounded-lg transition-all text-[16px]"
+                    disabled={submitting}
+                    className="w-full text-white py-4 rounded-lg transition-all text-[16px] disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: "var(--dpi-accent)",
                       fontFamily: "var(--font-family-heading)",
