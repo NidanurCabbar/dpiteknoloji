@@ -364,6 +364,24 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Sekmeler arası senkronizasyon: başka sekmede localStorage güncellenince
+  // bu sekmedeki state'i de yenile (admin kaydet → ana sayfa anında güncellensin).
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY || e.key === null) {
+        setContent(loadFromStorage());
+      }
+      if (e.key === MESSAGES_KEY || e.key === null) {
+        try {
+          const raw = localStorage.getItem(MESSAGES_KEY);
+          setMessages(raw ? JSON.parse(raw) : []);
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
   // localStorage yazımı quota hatası fırlatabilir (büyük base64 görseller vs).
   // Hatayı yutmuyoruz; çağıran katmanın bilmesi için false dönüyoruz.
   const saveToStorage = (newContent: SiteContent): boolean => {
