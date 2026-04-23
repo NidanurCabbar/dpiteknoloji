@@ -166,6 +166,9 @@ const en: Dict = {
   "contact.form.message": "Your Message",
   "contact.form.submit": "Send",
   "contact.form.success": "Your message has been received! We will get back to you shortly.",
+  "contact.form.kvkk":
+    "I consent to the processing of my personal data (name, email, phone) for the purpose of responding to my request, in accordance with the privacy policy.",
+  "contact.form.kvkk.required": "Please accept the privacy notice to continue.",
   "contact.info.title": "Contact Information",
   "contact.info.address.label": "Address",
   "contact.info.address.value":
@@ -344,6 +347,9 @@ const tr: Dict = {
   "contact.form.message": "Mesajınız",
   "contact.form.submit": "Gönder",
   "contact.form.success": "Mesajınız alındı! En kısa sürede sizinle iletişime geçeceğiz.",
+  "contact.form.kvkk":
+    "Talebimin değerlendirilmesi amacıyla ad, e-posta ve telefon bilgilerimin gizlilik politikası çerçevesinde işlenmesini kabul ediyorum.",
+  "contact.form.kvkk.required": "Devam etmek için aydınlatma metnini onaylayın.",
   "contact.info.title": "İletişim Bilgileri",
   "contact.info.address.label": "Adres",
   "contact.info.address.value":

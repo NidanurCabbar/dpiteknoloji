@@ -43,12 +43,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </svg>
         </button>
 
-        <h2 className="text-3xl mb-2 text-center" style={{ color: "#12487c" }}>
+        <h2 className="text-3xl mb-8 text-center" style={{ color: "#12487c" }}>
           Admin Girişi
         </h2>
-        <p className="text-gray-500 text-center mb-8 text-sm">
-          Shift + S ile bu ekranı açabilirsiniz
-        </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (

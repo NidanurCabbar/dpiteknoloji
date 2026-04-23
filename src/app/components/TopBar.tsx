@@ -1,6 +1,7 @@
 import { Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { safeHttpUrl } from "../lib/safeUrl";
 
 const brandColors: Record<string, string> = {
   facebook: "#1877F2",
@@ -31,8 +32,8 @@ export function TopBar() {
 
   // Görünür + URL girilmiş olanlar
   const visibleSocials = allSocials
-    .filter((s) => vis[s.key] && links[s.key]?.trim())
-    .map((s) => ({ ...s, href: links[s.key] }));
+    .map((s) => ({ ...s, href: safeHttpUrl(links[s.key]) }))
+    .filter((s) => vis[s.key] && s.href);
 
   return (
     <div

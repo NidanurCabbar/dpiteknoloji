@@ -2,6 +2,11 @@ import { useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useSiteContent, ServiceData, ProjectData, SocialVisibility, SocialLinks, Bi } from "../contexts/SiteContentContext";
 import { useNavigate } from "react-router";
+import { isAllowedLink } from "../lib/safeUrl";
+
+// Görsel: 10 MB, Video: 150 MB üst sınır (self-DoS'a karşı)
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 150 * 1024 * 1024;
 
 // Yeni bir öğe eklerken placeholder olarak her iki dili aynı başlangıç metniyle doldur
 const bi = (v: string): Bi => ({ en: v, tr: v });
@@ -133,10 +138,19 @@ export function Admin() {
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      pendingVideoRef.current = file;
-      setVideoFileName(file.name);
+    if (!file) return;
+    if (!file.type.startsWith("video/")) {
+      showToast("⚠ Lütfen bir video dosyası seçin");
+      e.target.value = "";
+      return;
     }
+    if (file.size > MAX_VIDEO_BYTES) {
+      showToast("⚠ Video 150 MB'tan büyük olamaz");
+      e.target.value = "";
+      return;
+    }
+    pendingVideoRef.current = file;
+    setVideoFileName(file.name);
   };
 
   const handleSaveHizmetler = () => {
@@ -176,6 +190,15 @@ export function Admin() {
   };
 
   const handleSaveSocial = () => {
+    // Güvenlik: sadece http/https (+ mailto/tel) linkleri kabul et.
+    // javascript:, data:, file: gibi şemalar saklı XSS'e yol açar.
+    const invalid = (Object.entries(socialLinks) as [keyof SocialLinks, string][])
+      .filter(([, url]) => !isAllowedLink(url))
+      .map(([k]) => k);
+    if (invalid.length) {
+      showToast(`⚠ Geçersiz URL: ${invalid.join(", ")} — sadece https:// ile başlayan adres girin`);
+      return;
+    }
     const ok1 = updateSocialVisibility(socialVis);
     const ok2 = updateSocialLinks(socialLinks);
     showToast(
@@ -236,6 +259,10 @@ export function Admin() {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       showToast("⚠ Lütfen bir görsel dosyası seçin");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      showToast("⚠ Görsel 10 MB'tan büyük olamaz");
       return;
     }
     try {
@@ -339,6 +366,10 @@ export function Admin() {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       showToast("⚠ Lütfen bir görsel dosyası seçin");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      showToast("⚠ Logo 10 MB'tan büyük olamaz");
       return;
     }
     try {
@@ -1191,13 +1222,19 @@ export function Admin() {
                         <div className="text-sm text-gray-700">
                           <strong>{m.name}</strong>
                           {" • "}
-                          <a href={`mailto:${m.email}`} className="text-blue-600 hover:underline">
+                          <a
+                            href={`mailto:${encodeURIComponent(m.email)}`}
+                            className="text-blue-600 hover:underline"
+                          >
                             {m.email}
                           </a>
                           {m.phone && (
                             <>
                               {" • "}
-                              <a href={`tel:${m.phone}`} className="text-blue-600 hover:underline">
+                              <a
+                                href={`tel:${m.phone.replace(/[^\d+]/g, "")}`}
+                                className="text-blue-600 hover:underline"
+                              >
                                 {m.phone}
                               </a>
                             </>

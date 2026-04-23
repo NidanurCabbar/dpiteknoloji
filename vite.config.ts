@@ -33,4 +33,10 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  // Production build'de console.* ve debugger ifadelerini kaldır
+  // (bilgi sızıntısı ve küçük performans kazancı).
+  esbuild: {
+    drop: ['console', 'debugger'],
+  },
 })

@@ -20,6 +20,7 @@ export function Iletisim() {
     subject: "",
     message: "",
   });
+  const [kvkkAccepted, setKvkkAccepted] = useState(false);
 
   const subjectOptions = [
     t("contact.subject.led"),
@@ -69,18 +70,27 @@ export function Iletisim() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
+    if (!kvkkAccepted) {
+      alert(t("contact.form.kvkk.required"));
+      return;
+    }
     setSubmitting(true);
     try {
       const emailSent = await sendContactEmail(formData);
-      addMessage({ ...formData, emailSent });
+      // Güvenlik/gizlilik: Form içeriği (PII) ziyaretçinin tarayıcısında
+      // kalıcı saklanmasın. Sadece e-posta gönderimi başarısız olursa,
+      // mesajın kaybolmaması için admin panel inbox'ına yedekle.
+      if (!emailSent) {
+        try { addMessage({ ...formData, emailSent: false }); } catch {}
+      }
       alert(t("contact.form.success"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setKvkkAccepted(false);
     } catch (err) {
-      console.error("Form gönderim hatası:", err);
-      // Yine de admin paneline kaydet
       try { addMessage({ ...formData, emailSent: false }); } catch {}
       alert(t("contact.form.success"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setKvkkAccepted(false);
     } finally {
       setSubmitting(false);
     }
@@ -223,9 +233,20 @@ export function Iletisim() {
                     />
                   </div>
 
+                  <label className="flex items-start gap-3 text-[13px] text-gray-600 leading-relaxed cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={kvkkAccepted}
+                      onChange={(e) => setKvkkAccepted(e.target.checked)}
+                      className="mt-1 w-4 h-4 accent-[#12487c] flex-shrink-0"
+                      required
+                    />
+                    <span>{t("contact.form.kvkk")}</span>
+                  </label>
+
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !kvkkAccepted}
                     className="w-full text-white py-4 rounded-lg transition-all text-[16px] disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: "var(--dpi-accent)",
@@ -339,9 +360,9 @@ export function Iletisim() {
               width="100%"
               height="100%"
               style={{ border: 0 }}
-              allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
               title={address}
               className="w-full h-full"
             />
