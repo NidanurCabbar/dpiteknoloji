@@ -361,7 +361,7 @@ export function Iletisim() {
                 <div className="text-left">
                   <p className="text-[12px] text-gray-600 mb-0.5">{t("contact.map.view")}</p>
                   <p className="text-[13px]" style={{ color: "#12487c" }}>
-                    {t("contact.map.address")}
+                    {address}
                   </p>
                 </div>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
