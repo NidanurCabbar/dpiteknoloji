@@ -334,14 +334,15 @@ export function Iletisim() {
         <div className="max-w-[1200px] mx-auto px-12">
           <div className="h-[300px] bg-gray-200 relative rounded-lg overflow-hidden shadow-lg">
             <iframe
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
+              key={address}
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(address)}&hl=${lang}&z=16&output=embed`}
               width="100%"
               height="100%"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="DPI Teknoloji"
+              title={address}
               className="w-full h-full"
             />
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
