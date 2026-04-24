@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useSiteContent, ServiceData, ProjectData, SocialVisibility, SocialLinks, Bi } from "../contexts/SiteContentContext";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { isAllowedLink } from "../lib/safeUrl";
 
 // Görsel: 10 MB, Video: 150 MB üst sınır (self-DoS'a karşı)
@@ -66,9 +66,16 @@ export function Admin() {
 
   /* ─── Toast bildirimi ─── */
   const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
   const showToast = (msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 3000);
   };
 
   /* ─── Anasayfa state ─── */
@@ -105,9 +112,61 @@ export function Admin() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  /* ─── Toast timer temizliği (memory leak önlemi) ─── */
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
+
+  /* ─── Content dış kaynaklardan güncellenince (başka sekme / başka cihaz
+       storage event) Admin'deki local düzenleme state'ini de senkronize et.
+       Yoksa eski değerlerle çalışan admin, kaydet'e basınca dış güncellemeleri
+       ezer. Effect, sadece ilgili content alanı değişirse tetiklenir. ─── */
+  useEffect(() => {
+    setHeroTitle(content.anasayfa.heroTitle);
+    setHeroDescription(content.anasayfa.heroDescription);
+  }, [content.anasayfa.heroTitle, content.anasayfa.heroDescription]);
+
+  useEffect(() => {
+    setServices(content.hizmetler.services);
+  }, [content.hizmetler.services]);
+
+  useEffect(() => {
+    setProjects(content.referanslar.projects);
+  }, [content.referanslar.projects]);
+
+  useEffect(() => {
+    setAboutContent(content.hakkimizda.aboutText);
+  }, [content.hakkimizda.aboutText]);
+
+  useEffect(() => {
+    setContactAddress(content.iletisim.address);
+    setContactPhone1(content.iletisim.phone1);
+    setContactPhone2(content.iletisim.phone2);
+    setContactEmail1(content.iletisim.email1);
+    setContactEmail2(content.iletisim.email2);
+  }, [
+    content.iletisim.address,
+    content.iletisim.phone1,
+    content.iletisim.phone2,
+    content.iletisim.email1,
+    content.iletisim.email2,
+  ]);
+
+  useEffect(() => {
+    setSocialVis(content.socialVisibility);
+  }, [content.socialVisibility]);
+
+  useEffect(() => {
+    setSocialLinks(content.socialLinks);
+  }, [content.socialLinks]);
+
+  // Render-time yönlendirme yerine Navigate bileşeni (Strict Mode uyumlu)
   if (!isAdmin) {
-    navigate("/");
-    return null;
+    return <Navigate to="/" replace />;
   }
 
   const handleLogout = () => {

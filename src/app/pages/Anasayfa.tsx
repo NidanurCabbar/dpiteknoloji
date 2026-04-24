@@ -2,6 +2,7 @@ import { ServiceCard } from "../components/ServiceCard";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
 import { useRef, useEffect } from "react";
+import { Link } from "react-router";
 import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -10,12 +11,16 @@ export function Anasayfa() {
   const { content, heroVideoSrc } = useSiteContent();
   const { t, lang } = useLanguage();
 
+  // heroVideoSrc değiştiğinde videoyu elle yeniden yükle ve oynat.
+  // (autoPlay attribute'ı ilk mount'ta zaten devreye girer; bu effect
+  // admin video güncellediğinde yeni kaynağa geçişi sağlar.)
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        console.log("Video autoplay failed:", error);
-      });
-    }
+    const v = videoRef.current;
+    if (!v) return;
+    v.load();
+    v.play().catch(() => {
+      /* sessiz: tarayıcı autoplay'i reddederse kullanıcı etkileşimi beklenir */
+    });
   }, [heroVideoSrc]);
 
   // Admin panelinde tanımlanan hizmetleri ana sayfa önizleme kartları için kullan
@@ -54,11 +59,7 @@ export function Anasayfa() {
             preload="auto"
             className="w-full h-full object-cover"
             src={heroVideoSrc}
-            onLoadedData={() => {
-              if (videoRef.current) {
-                videoRef.current.play();
-              }
-            }}
+            aria-hidden="true"
           />
           <div
             className="absolute bottom-0 left-0 right-0 h-[160px]"
@@ -140,8 +141,8 @@ export function Anasayfa() {
             <p className="text-white/80 text-[18px] mb-10 max-w-[700px] mx-auto">
               {t("home.cta.description")}
             </p>
-            <a
-              href="/iletisim"
+            <Link
+              to="/iletisim"
               style={{
                 display: "inline-block",
                 backgroundColor: "var(--dpi-accent)",
@@ -165,7 +166,7 @@ export function Anasayfa() {
               }}
             >
               {t("home.cta.button")}
-            </a>
+            </Link>
           </FadeIn>
         </div>
       </section>

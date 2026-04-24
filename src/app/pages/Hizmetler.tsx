@@ -4,6 +4,7 @@ import bgImage3 from "figma:asset/b71c5f29786c8500e02ad3c397f7c4d0c404eb16.png";
 import bgImage4 from "figma:asset/6889dc6ba9f2c3f5c40b2c63aa751ed5e5c4732a.png";
 import { FadeIn } from "../components/FadeIn";
 import { TechPattern } from "../components/TechPattern";
+import { Link } from "react-router";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 
@@ -151,8 +152,8 @@ export function Hizmetler() {
             <p className="text-white/80 text-[18px] mb-10 max-w-[700px] mx-auto">
               {t("home.cta.description")}
             </p>
-            <a
-              href="/iletisim"
+            <Link
+              to="/iletisim"
               style={{
                 display: "inline-block",
                 backgroundColor: "var(--dpi-accent)",
@@ -176,7 +177,7 @@ export function Hizmetler() {
               }}
             >
               {t("home.cta.button")}
-            </a>
+            </Link>
           </FadeIn>
         </div>
       </section>

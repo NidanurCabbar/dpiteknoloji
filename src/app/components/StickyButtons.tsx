@@ -2,6 +2,7 @@
  * Sabit Teklif Al butonu — her sayfada sağ altta görünür.
  */
 import { FileText } from "lucide-react";
+import { Link } from "react-router";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export function StickyButtons() {
@@ -9,8 +10,8 @@ export function StickyButtons() {
   const label = t("sticky.getQuote");
 
   return (
-    <a
-      href="/iletisim"
+    <Link
+      to="/iletisim"
       aria-label={label}
       style={{
         position: "fixed",
@@ -44,6 +45,6 @@ export function StickyButtons() {
     >
       <FileText size={18} color="#ffffff" />
       {label}
-    </a>
+    </Link>
   );
 }

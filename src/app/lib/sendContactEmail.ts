@@ -20,9 +20,7 @@ export interface ContactEmailPayload {
 export async function sendContactEmail(
   payload: ContactEmailPayload
 ): Promise<boolean> {
-  const accessKey = (import.meta as any).env?.VITE_WEB3FORMS_KEY as
-    | string
-    | undefined;
+  const accessKey = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
 
   if (!accessKey) {
     console.warn(

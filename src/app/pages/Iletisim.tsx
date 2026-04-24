@@ -83,10 +83,12 @@ export function Iletisim() {
       if (!emailSent) {
         try { addMessage({ ...formData, emailSent: false }); } catch {}
       }
+      // Kullanıcıya her iki durumda da başarı mesajı gösterilir (mesaj ya
+      // doğrudan e-postayla iletildi ya da admin inbox'ına yedeklendi).
       alert(t("contact.form.success"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       setKvkkAccepted(false);
-    } catch (err) {
+    } catch {
       try { addMessage({ ...formData, emailSent: false }); } catch {}
       alert(t("contact.form.success"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
