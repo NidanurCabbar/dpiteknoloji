@@ -53,8 +53,6 @@ export function Hakkimizda() {
     },
   ];
 
-  const fieldItems = [t("about.fields.i1"), t("about.fields.i2"), t("about.fields.i3")];
-
   return (
     <div className="pt-[72px]">
       {/* Hero */}
@@ -87,56 +85,33 @@ export function Hakkimizda() {
 
       {/* Company Info */}
       <section className="py-24 bg-white">
-        <div className="max-w-[1200px] mx-auto px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <FadeIn direction="left">
-              <div>
+        <div className="max-w-[1000px] mx-auto px-12">
+          <FadeIn direction="up">
+            <div>
+              <p
+                className="text-[14px] font-semibold tracking-[3px] uppercase mb-3"
+                style={{ color: "var(--dpi-accent)" }}
+              >
+                {t("about.kicker")}
+              </p>
+              <h2
+                className="text-[36px] mb-6"
+                style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
+              >
+                {t("about.companyTitle")}
+              </h2>
+              {aboutParagraphs.map((p, i) => (
                 <p
-                  className="text-[14px] font-semibold tracking-[3px] uppercase mb-3"
-                  style={{ color: "var(--dpi-accent)" }}
+                  key={i}
+                  className={`text-gray-700 text-[16px] leading-relaxed ${
+                    i < aboutParagraphs.length - 1 ? "mb-6" : ""
+                  }`}
                 >
-                  {t("about.kicker")}
+                  {p}
                 </p>
-                <h2
-                  className="text-[36px] mb-6"
-                  style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
-                >
-                  {t("about.companyTitle")}
-                </h2>
-                {aboutParagraphs.map((p, i) => (
-                  <p
-                    key={i}
-                    className={`text-gray-700 text-[16px] leading-relaxed ${
-                      i < aboutParagraphs.length - 1 ? "mb-6" : ""
-                    }`}
-                  >
-                    {p}
-                  </p>
-                ))}
-              </div>
-            </FadeIn>
-            <FadeIn direction="right" delay={0.2}>
-              <div className="space-y-6">
-                <div className="rounded-xl border border-gray-100 p-8">
-                  <h4
-                    className="text-[15px] font-semibold mb-4"
-                    style={{ fontFamily: "var(--font-family-heading)", color: "var(--dpi-blue)" }}
-                  >
-                    {t("about.fields.title")}
-                  </h4>
-                  {fieldItems.map((item) => (
-                    <div key={item} className="flex items-center gap-3 mb-3 last:mb-0">
-                      <div
-                        className="w-2 h-2 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: "var(--dpi-accent)" }}
-                      />
-                      <span className="text-gray-700 text-[14px]">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
-          </div>
+              ))}
+            </div>
+          </FadeIn>
         </div>
       </section>
 

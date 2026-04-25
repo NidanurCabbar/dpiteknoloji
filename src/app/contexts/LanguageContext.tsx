@@ -106,10 +106,6 @@ const en: Dict = {
     "We approach every project as a strategic process that creates brand reputation and long-term investment value beyond a mere technical implementation. We provide end-to-end professional service across needs analysis, system design, implementation and after-sales support.",
   "about.p3":
     "With our experience across diverse sectors, strong technical infrastructure and forward-looking vision, we continue producing innovative and sustainable solutions that adapt to future expectations.",
-  "about.fields.title": "Our Fields of Activity",
-  "about.fields.i1": "Professional LED Display Systems",
-  "about.fields.i2": "Sound, Light and Image Solutions",
-  "about.fields.i3": "Low-Current Systems",
   "about.mission.title": "Our Mission",
   "about.mission.text":
     "To carefully analyze our customers' needs and provide high-quality, reliable and sustainable solutions in LED displays, sound-light-image and low-current systems. To deliver lasting satisfaction in every project by uniting technology with functionality, aesthetics and performance.",
@@ -289,10 +285,6 @@ const tr: Dict = {
     "Her projeyi teknik bir uygulama olmanın ötesinde, marka itibarı ve uzun vadeli yatırım değeri üreten stratejik bir süreç olarak ele alıyoruz. İhtiyaç analizi, sistem tasarımı, uygulama ve satış sonrası destek süreçlerinin tamamında uçtan uca profesyonel hizmet sunuyoruz.",
   "about.p3":
     "Farklı sektörlerdeki deneyimimiz, güçlü teknik altyapımız ve gelişime açık vizyonumuzla, geleceğin beklentilerine uyum sağlayan yenilikçi ve sürdürülebilir çözümler üretmeye devam ediyoruz.",
-  "about.fields.title": "Faaliyet Alanlarımız",
-  "about.fields.i1": "Profesyonel LED Ekran Sistemleri",
-  "about.fields.i2": "Ses, Işık ve Görüntü Çözümleri",
-  "about.fields.i3": "Zayıf Akım Sistemleri",
   "about.mission.title": "Misyonumuz",
   "about.mission.text":
     "Müşterilerimizin ihtiyaçlarını titizlikle analiz ederek, LED ekran, ses-ışık-görüntü ve zayıf akım sistemlerinde yüksek kaliteli, güvenilir ve sürdürülebilir çözümler sunmak. Teknolojiyi işlevsellik, estetik ve performans ile buluşturarak her projede kalıcı memnuniyet sağlamak.",
