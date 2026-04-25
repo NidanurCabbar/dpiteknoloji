@@ -23,7 +23,7 @@ const en: Dict = {
 
   // Footer
   "footer.intro":
-    "Your trusted technology partner providing corporate solutions in large-scale LED displays, professional audio, lighting and low-current systems.",
+    "DPI Teknoloji is a technology company providing corporate solutions in LED Displays, Professional Sound-Light-Image and Low-Current Systems. We design unique, reliable and lasting solutions for projects of every scale.",
   "footer.quickLinks": "QUICK LINKS",
   "footer.services": "SERVICES",
   "footer.contact": "CONTACT",
@@ -202,7 +202,7 @@ const tr: Dict = {
 
   // Footer
   "footer.intro":
-    "Büyük ölçekli LED ekran, profesyonel ses, ışık ve zayıf akım sistemleri alanında kurumsal çözümler sunan güvenilir teknoloji şirketiniz.",
+    "DPI Teknoloji, LED Ekran, Profesyonel Ses-Işık-Görüntü ve Zayıf Akım Sistemleri alanlarında kurumsal çözümler sunan bir teknoloji şirketidir. Her ölçekteki projeye özgün, güvenilir ve kalıcı çözümler tasarlıyoruz.",
   "footer.quickLinks": "HIZLI LİNKLER",
   "footer.services": "HİZMETLER",
   "footer.contact": "İLETİŞİM",
