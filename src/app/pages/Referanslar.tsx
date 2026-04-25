@@ -13,7 +13,24 @@ export function Referanslar() {
   const { t, lang } = useLanguage();
   const { content } = useSiteContent();
 
-  const references: Reference[] = content.referanslar.projects.map((p) => ({
+  // Sıralama kuralı: createdAt'i olan referanslar en yeniden eskiye doğru en üstte;
+  // createdAt'i olmayan (eski/migrate edilmiş) kayıtlar mevcut dizilimini koruyarak
+  // bunların altında kalır. Tarih bilgisi sayfada hiçbir yerde gösterilmez.
+  const sortedProjects = [...content.referanslar.projects]
+    .map((p, idx) => ({ p, idx }))
+    .sort((a, b) => {
+      const aHas = !!a.p.createdAt;
+      const bHas = !!b.p.createdAt;
+      if (aHas && bHas) {
+        return (b.p.createdAt as string).localeCompare(a.p.createdAt as string);
+      }
+      if (aHas && !bHas) return -1; // yeni eklenen üstte
+      if (!aHas && bHas) return 1;
+      return a.idx - b.idx; // ikisi de eski → orijinal sırayı koru
+    })
+    .map(({ p }) => p);
+
+  const references: Reference[] = sortedProjects.map((p) => ({
     client: pickLang(p.client, lang),
     project: pickLang(p.project, lang),
     logo: p.logo || undefined,
@@ -65,11 +82,16 @@ export function Referanslar() {
               {t("refs.section.subtitle")}
             </p>
           </FadeIn>
-          <div className="flex flex-wrap justify-center gap-8">
+          {/*
+            Sabit kolonlu responsive grid: kart sayısı arttıkça
+            yalnızca alta yeni satırlar eklenir, layout asla bozulmaz.
+            Yeni referanslar (createdAt'e göre sıralı) sol-üstten doldurulur.
+          */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
             {references.map((ref, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+              <FadeIn key={index} delay={Math.min(index, 7) * 0.05}>
                 <div
-                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[240px] w-[260px]"
+                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[240px] w-full max-w-[260px]"
                 >
                   <div className="w-full h-24 flex items-center justify-center mb-4">
                     {ref.logo ? (

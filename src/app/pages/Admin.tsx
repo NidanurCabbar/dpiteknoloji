@@ -381,6 +381,9 @@ export function Admin() {
         client: bi("Yeni Müşteri"),
         project: bi("Yeni Proje"),
         year: "2024",
+        // Eklenme zamanı: yeni referanslar en üstte/solda görünsün diye kullanılır.
+        // Sayfada görüntülenmez, yalnızca sıralama amaçlıdır.
+        createdAt: new Date().toISOString(),
       },
     ]);
   };

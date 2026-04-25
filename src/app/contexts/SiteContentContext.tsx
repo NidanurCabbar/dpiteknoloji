@@ -33,6 +33,12 @@ export interface ProjectData {
   project: Bi;
   year: string;
   logo?: string;
+  /**
+   * Eklenme zamanı (ISO 8601). Yeni eklenen referansları en başa
+   * almak için kullanılır. Sayfada hiçbir yerde gösterilmez.
+   * Eski/migrate edilmiş kayıtlarda olmayabilir (undefined).
+   */
+  createdAt?: string;
 }
 
 export interface AnasayfaContent {
@@ -244,6 +250,7 @@ function migrateProject(raw: any, fallback: ProjectData): ProjectData {
     project: toBi(raw?.project, fallback.project),
     year: typeof raw?.year === "string" ? raw.year : fallback.year,
     logo: typeof raw?.logo === "string" ? raw.logo : fallback.logo,
+    createdAt: typeof raw?.createdAt === "string" ? raw.createdAt : undefined,
   };
 }
 
