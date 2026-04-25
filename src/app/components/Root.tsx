@@ -4,6 +4,7 @@ import { TopBar } from "./TopBar";
 import { Footer } from "./Footer";
 import { StickyButtons } from "./StickyButtons";
 import { LoginModal } from "./LoginModal";
+import { ContentProtection } from "./ContentProtection";
 import { useState, useEffect, useLayoutEffect } from "react";
 
 export function Root() {
@@ -73,6 +74,7 @@ export function Root() {
 
   return (
     <div className="min-h-screen bg-white">
+      {!isAdminPage && <ContentProtection />}
       {!isAdminPage && <TopBar />}
       {!isAdminPage && <Navbar />}
       <div style={{ paddingTop: isAdminPage ? 0 : 48 }}>

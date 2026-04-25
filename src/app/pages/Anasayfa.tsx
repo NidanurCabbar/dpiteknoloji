@@ -57,7 +57,10 @@ export function Anasayfa() {
             muted
             playsInline
             preload="auto"
-            className="w-full h-full object-cover"
+            controlsList="nodownload noremoteplayback"
+            disablePictureInPicture
+            onContextMenu={(e) => e.preventDefault()}
+            className="w-full h-full object-cover select-none pointer-events-none"
             src={heroVideoSrc}
             aria-hidden="true"
           />
