@@ -21,16 +21,54 @@ export function Root() {
     document.body.scrollTop = 0;
   }, [location.pathname]);
 
+  // Admin giriş kısayolu: Shift+S → ardından D (1.5 sn içinde).
+  // Sıralı kombo, tek tuşla rastlantısal tetiklemeyi engeller ve
+  // klavye dilinden bağımsızdır (sadece üreteceği harfe bakar).
   useEffect(() => {
+    let armed = false;
+    let timer: number | null = null;
+
+    const disarm = () => {
+      armed = false;
+      if (timer !== null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.key === "S") {
+      // Form alanlarında çalışma (input/textarea içindeyken kısayol tetiklenmesin)
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        return;
+      }
+
+      if (!armed) {
+        // 1. adım: Shift+S
+        if (e.shiftKey && (e.key === "S" || e.key === "s")) {
+          e.preventDefault();
+          armed = true;
+          timer = window.setTimeout(disarm, 1500);
+        }
+        return;
+      }
+
+      // 2. adım: D (Shift olmadan veya olabilir, fark etmez)
+      if (e.key === "D" || e.key === "d") {
         e.preventDefault();
+        disarm();
         setShowLoginModal(true);
+      } else {
+        // Yanlış tuşa basıldıysa diziyi sıfırla
+        disarm();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (timer !== null) window.clearTimeout(timer);
+    };
   }, []);
 
   return (
