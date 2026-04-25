@@ -76,20 +76,15 @@ export function Iletisim() {
     }
     setSubmitting(true);
     try {
+      // E-posta ve Supabase inbox'a paralel yaz — Supabase artık kalıcı
+      // merkezi kayıt, e-posta ise ikincil bildirim kanalı.
       const emailSent = await sendContactEmail(formData);
-      // Güvenlik/gizlilik: Form içeriği (PII) ziyaretçinin tarayıcısında
-      // kalıcı saklanmasın. Sadece e-posta gönderimi başarısız olursa,
-      // mesajın kaybolmaması için admin panel inbox'ına yedekle.
-      if (!emailSent) {
-        try { addMessage({ ...formData, emailSent: false }); } catch {}
-      }
-      // Kullanıcıya her iki durumda da başarı mesajı gösterilir (mesaj ya
-      // doğrudan e-postayla iletildi ya da admin inbox'ına yedeklendi).
+      try { await addMessage({ ...formData, emailSent }); } catch {}
       alert(t("contact.form.success"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       setKvkkAccepted(false);
     } catch {
-      try { addMessage({ ...formData, emailSent: false }); } catch {}
+      try { await addMessage({ ...formData, emailSent: false }); } catch {}
       alert(t("contact.form.success"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       setKvkkAccepted(false);

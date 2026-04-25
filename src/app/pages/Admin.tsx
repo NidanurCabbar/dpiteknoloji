@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useSiteContent, ServiceData, ProjectData, SocialVisibility, SocialLinks, Bi } from "../contexts/SiteContentContext";
 import { Navigate, useNavigate } from "react-router";
 import { isAllowedLink } from "../lib/safeUrl";
+import { uploadDataUrl } from "../lib/uploadMedia";
 
 // Görsel: 10 MB, Video: 150 MB üst sınır (self-DoS'a karşı)
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -176,14 +177,14 @@ export function Admin() {
 
   /* ═══════ KAYDET HANDLERLERİ ═══════ */
 
-  const handleSaveAnasayfa = () => {
+  const handleSaveAnasayfa = async () => {
     // Video dosyası seçildiyse kaydet
     if (pendingVideoRef.current) {
       setHeroVideoFile(pendingVideoRef.current);
       pendingVideoRef.current = null;
     }
     // Metin içeriklerini kaydet
-    const ok = updateAnasayfa({
+    const ok = await updateAnasayfa({
       heroTitle,
       heroDescription,
       heroVideoUrl: content.anasayfa.heroVideoUrl,
@@ -191,7 +192,7 @@ export function Admin() {
     showToast(
       ok
         ? "✓ Ana sayfa içerikleri kaydedildi!"
-        : "⚠ Kaydetme başarısız — tarayıcı depolaması dolu olabilir"
+        : "⚠ Kaydetme başarısız — ağ/sunucu hatası olabilir"
     );
   };
 
@@ -212,8 +213,8 @@ export function Admin() {
     setVideoFileName(file.name);
   };
 
-  const handleSaveHizmetler = () => {
-    const ok = updateHizmetler({ services });
+  const handleSaveHizmetler = async () => {
+    const ok = await updateHizmetler({ services });
     showToast(
       ok
         ? "✓ Hizmetler kaydedildi!"
@@ -221,22 +222,22 @@ export function Admin() {
     );
   };
 
-  const handleSaveReferanslar = () => {
-    const ok = updateReferanslar({ projects });
+  const handleSaveReferanslar = async () => {
+    const ok = await updateReferanslar({ projects });
     showToast(
       ok ? "✓ Referanslar kaydedildi!" : "⚠ Kaydetme başarısız"
     );
   };
 
-  const handleSaveHakkimizda = () => {
-    const ok = updateHakkimizda({ aboutText: aboutContent });
+  const handleSaveHakkimizda = async () => {
+    const ok = await updateHakkimizda({ aboutText: aboutContent });
     showToast(
       ok ? "✓ Hakkımızda içerikleri kaydedildi!" : "⚠ Kaydetme başarısız"
     );
   };
 
-  const handleSaveIletisim = () => {
-    const ok = updateIletisim({
+  const handleSaveIletisim = async () => {
+    const ok = await updateIletisim({
       address: contactAddress,
       phone1: contactPhone1,
       phone2: contactPhone2,
@@ -248,7 +249,7 @@ export function Admin() {
     );
   };
 
-  const handleSaveSocial = () => {
+  const handleSaveSocial = async () => {
     // Güvenlik: sadece http/https (+ mailto/tel) linkleri kabul et.
     // javascript:, data:, file: gibi şemalar saklı XSS'e yol açar.
     const invalid = (Object.entries(socialLinks) as [keyof SocialLinks, string][])
@@ -258,8 +259,8 @@ export function Admin() {
       showToast(`⚠ Geçersiz URL: ${invalid.join(", ")} — sadece https:// ile başlayan adres girin`);
       return;
     }
-    const ok1 = updateSocialVisibility(socialVis);
-    const ok2 = updateSocialLinks(socialLinks);
+    const ok1 = await updateSocialVisibility(socialVis);
+    const ok2 = await updateSocialLinks(socialLinks);
     showToast(
       ok1 && ok2
         ? "✓ Sosyal medya ayarları kaydedildi!"
@@ -326,7 +327,9 @@ export function Admin() {
     }
     try {
       const dataUrl = await fileToCompressedDataUrl(file);
-      handleServiceImageChange(index, dataUrl);
+      // Supabase Storage'a yükle; başarısız olursa data URL fallback.
+      const finalUrl = await uploadDataUrl(dataUrl, "services");
+      handleServiceImageChange(index, finalUrl);
       showToast("✓ Görsel yüklendi (kaydetmeyi unutmayın)");
     } catch (err) {
       console.error("Görsel işleme hatası:", err);
@@ -434,7 +437,8 @@ export function Admin() {
     try {
       // Logo daha küçük ama şeffaflığı korumalı → PNG formatında çıktı
       const dataUrl = await fileToCompressedDataUrl(file, 800, 1, "image/png");
-      handleProjectLogoChange(index, dataUrl);
+      const finalUrl = await uploadDataUrl(dataUrl, "logos");
+      handleProjectLogoChange(index, finalUrl);
       showToast("✓ Logo yüklendi (kaydetmeyi unutmayın)");
     } catch (err) {
       console.error("Logo işleme hatası:", err);
@@ -444,7 +448,7 @@ export function Admin() {
 
   /* ═══════ ŞİFRE DEĞİŞTİRME ═══════ */
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     setPasswordError("");
     if (!currentPassword || !newPassword || !confirmPassword) {
       setPasswordError("Tüm alanları doldurun");
@@ -458,7 +462,7 @@ export function Admin() {
       setPasswordError("Yeni şifre en az 6 karakter olmalıdır");
       return;
     }
-    const success = changePassword(currentPassword, newPassword);
+    const success = await changePassword(currentPassword, newPassword);
     if (success) {
       showToast("✓ Şifre başarıyla değiştirildi!");
       setCurrentPassword("");

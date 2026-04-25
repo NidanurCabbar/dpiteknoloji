@@ -16,18 +16,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    const success = login(email, password);
-    if (success) {
-      onClose();
-      setEmail("");
-      setPassword("");
-      navigate("/admin");
-    } else {
-      setError("Geçersiz kullanıcı adı veya şifre");
+    setSubmitting(true);
+    try {
+      const success = await login(email, password);
+      if (success) {
+        onClose();
+        setEmail("");
+        setPassword("");
+        navigate("/admin");
+      } else {
+        setError("Geçersiz kullanıcı adı veya şifre");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -81,10 +87,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           <button
             type="submit"
-            className="w-full text-white py-3 rounded-lg hover:opacity-90 transition-opacity"
+            disabled={submitting}
+            className="w-full text-white py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-60"
             style={{ backgroundColor: "#12487c" }}
           >
-            Giriş Yap
+            {submitting ? "Giriş yapılıyor..." : "Giriş Yap"}
           </button>
         </form>
       </div>

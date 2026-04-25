@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from "react";
+import { supabase, isSupabaseReady } from "../lib/supabase";
 
 /* ─── Video imports (kullanılabilir stok videolar) ─── */
 import heroDefault from "../../imports/hero_firefly_174060.mp4";
@@ -31,14 +32,13 @@ export interface ProjectData {
   client: Bi;
   project: Bi;
   year: string;
-  /** Müşteri/kurum logosu (data URL veya http(s) URL). Opsiyonel. */
   logo?: string;
 }
 
 export interface AnasayfaContent {
   heroTitle: Bi;
   heroDescription: Bi;
-  heroVideoUrl: string; // blob URL veya varsayılan import
+  heroVideoUrl: string;
 }
 
 export interface HizmetlerContent {
@@ -87,7 +87,7 @@ export interface ContactMessage {
   message: string;
   createdAt: string; // ISO
   read: boolean;
-  emailSent?: boolean; // Web3Forms başarılı mı
+  emailSent?: boolean;
 }
 
 export interface SiteContent {
@@ -116,10 +116,7 @@ const defaultContent: SiteContent = {
   hizmetler: {
     services: [
       {
-        title: {
-          en: "Professional LED Display Systems",
-          tr: "Profesyonel Led Ekran Sistemleri",
-        },
+        title: { en: "Professional LED Display Systems", tr: "Profesyonel Led Ekran Sistemleri" },
         description: {
           en: "With the latest LED display technology we bring visual excellence to your events, venues and projects.",
           tr: "En son teknoloji LED ekran sistemleri ile etkinliklerinize, mekanlarınıza ve projelerinize görsel mükemmellik katıyoruz.",
@@ -132,10 +129,7 @@ const defaultContent: SiteContent = {
         image: "https://images.unsplash.com/photo-1575719028439-65ce8662c1cc?w=1080",
       },
       {
-        title: {
-          en: "Professional Sound, Lighting and Display Systems",
-          tr: "Profesyonel Ses, Işık Ve Görüntü Sistemi",
-        },
+        title: { en: "Professional Sound, Lighting and Display Systems", tr: "Profesyonel Ses, Işık Ve Görüntü Sistemi" },
         description: {
           en: "From concerts to conferences, from theatre stages to open-air events, we deliver professional audio solutions tailored to every environment.",
           tr: "Konserlerden konferanslara, tiyatro sahnesinden açık hava etkinliklerine kadar her ortam için özel tasarlanmış profesyonel ses çözümleri sunuyoruz.",
@@ -148,10 +142,7 @@ const defaultContent: SiteContent = {
         image: "https://images.unsplash.com/photo-1773625545016-d575264483e9?w=1080",
       },
       {
-        title: {
-          en: "Low-Current Systems",
-          tr: "Zayıf Akım Sistemleri",
-        },
+        title: { en: "Low-Current Systems", tr: "Zayıf Akım Sistemleri" },
         description: {
           en: "Our lighting systems transform your venues and add visual depth to your events.",
           tr: "Işıklandırma sistemlerimiz ile mekanlarınızı dönüştürüyor, etkinliklerinize görsel derinlik katıyoruz.",
@@ -167,21 +158,9 @@ const defaultContent: SiteContent = {
   },
   referanslar: {
     projects: [
-      {
-        client: { en: "İstanbul Metropolitan Municipality", tr: "İstanbul Büyükşehir Belediyesi" },
-        project: { en: "Taksim Square LED Display System", tr: "Taksim Meydanı LED Ekran Sistemi" },
-        year: "2024",
-      },
-      {
-        client: { en: "Türk Telekom Arena", tr: "Türk Telekom Arena" },
-        project: { en: "Stadium Sound and Display System", tr: "Stadyum Ses ve Görüntü Sistemi" },
-        year: "2023",
-      },
-      {
-        client: { en: "Ankara Congress Center", tr: "Ankara Kongre Merkezi" },
-        project: { en: "Conference Hall Technology Infrastructure", tr: "Konferans Salonu Teknolojik Altyapı" },
-        year: "2024",
-      },
+      { client: { en: "İstanbul Metropolitan Municipality", tr: "İstanbul Büyükşehir Belediyesi" }, project: { en: "Taksim Square LED Display System", tr: "Taksim Meydanı LED Ekran Sistemi" }, year: "2024" },
+      { client: { en: "Türk Telekom Arena", tr: "Türk Telekom Arena" }, project: { en: "Stadium Sound and Display System", tr: "Stadyum Ses ve Görüntü Sistemi" }, year: "2023" },
+      { client: { en: "Ankara Congress Center", tr: "Ankara Kongre Merkezi" }, project: { en: "Conference Hall Technology Infrastructure", tr: "Konferans Salonu Teknolojik Altyapı" }, year: "2024" },
     ],
   },
   hakkimizda: {
@@ -206,40 +185,28 @@ const defaultContent: SiteContent = {
     email1: "info@dpiteknoloji.com.tr",
     email2: "destek@dpiteknoloji.com.tr",
   },
-  socialVisibility: {
-    facebook: false,
-    instagram: true,
-    linkedin: true,
-    twitter: false,
-    youtube: false,
-  },
-  socialLinks: {
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    twitter: "",
-    youtube: "",
-  },
+  socialVisibility: { facebook: false, instagram: true, linkedin: true, twitter: false, youtube: false },
+  socialLinks: { facebook: "", instagram: "", linkedin: "", twitter: "", youtube: "" },
 };
 
 /* ─── Context ─── */
 interface SiteContentContextType {
   content: SiteContent;
   heroVideoSrc: string;
-  // update* fonksiyonları başarı durumunu döner (localStorage quota vs hataları için)
-  updateAnasayfa: (data: AnasayfaContent) => boolean;
-  updateHizmetler: (data: HizmetlerContent) => boolean;
-  updateReferanslar: (data: ReferanslarContent) => boolean;
-  updateHakkimizda: (data: HakkimizdaContent) => boolean;
-  updateIletisim: (data: IletisimContent) => boolean;
-  updateSocialVisibility: (data: SocialVisibility) => boolean;
-  updateSocialLinks: (data: SocialLinks) => boolean;
-  setHeroVideoFile: (file: File) => void;
+  // update* fonksiyonları başarı durumunu döner
+  updateAnasayfa: (data: AnasayfaContent) => Promise<boolean>;
+  updateHizmetler: (data: HizmetlerContent) => Promise<boolean>;
+  updateReferanslar: (data: ReferanslarContent) => Promise<boolean>;
+  updateHakkimizda: (data: HakkimizdaContent) => Promise<boolean>;
+  updateIletisim: (data: IletisimContent) => Promise<boolean>;
+  updateSocialVisibility: (data: SocialVisibility) => Promise<boolean>;
+  updateSocialLinks: (data: SocialLinks) => Promise<boolean>;
+  setHeroVideoFile: (file: File) => Promise<void>;
   // İletişim mesajları
   messages: ContactMessage[];
-  addMessage: (m: Omit<ContactMessage, "id" | "createdAt" | "read">) => ContactMessage;
-  markMessageRead: (id: string, read?: boolean) => void;
-  deleteMessage: (id: string) => void;
+  addMessage: (m: Omit<ContactMessage, "id" | "createdAt" | "read">) => Promise<ContactMessage>;
+  markMessageRead: (id: string, read?: boolean) => Promise<void>;
+  deleteMessage: (id: string) => Promise<void>;
 }
 
 const SiteContentContext = createContext<SiteContentContextType | undefined>(undefined);
@@ -247,15 +214,14 @@ const SiteContentContext = createContext<SiteContentContextType | undefined>(und
 const STORAGE_KEY = "dpi_site_content";
 const VIDEO_STORAGE_KEY = "dpi_hero_video";
 const MESSAGES_KEY = "dpi_contact_messages";
+const SITE_ROW_ID = 1; // site_content tablosunda singleton satır
 
 /* ─── Migration helpers: eski string şemayı Bi'ye çevir ─── */
 function toBi(v: any, fallback: Bi): Bi {
   if (v && typeof v === "object" && typeof v.en === "string" && typeof v.tr === "string") {
     return { en: v.en, tr: v.tr };
   }
-  if (typeof v === "string") {
-    return { en: v, tr: v };
-  }
+  if (typeof v === "string") return { en: v, tr: v };
   return fallback;
 }
 
@@ -281,91 +247,187 @@ function migrateProject(raw: any, fallback: ProjectData): ProjectData {
   };
 }
 
-/* ─── Helper: localStorage'dan oku (şema göçü dahil) ─── */
+/** JSON içeriği tam/şemaya uygun SiteContent'e normalize et. */
+function normalizeContent(p: any): SiteContent {
+  const servicesRaw = p?.hizmetler?.services;
+  const services: ServiceData[] =
+    Array.isArray(servicesRaw) && servicesRaw.length > 0
+      ? servicesRaw.map((s: any, i: number) =>
+          migrateService(s, defaultContent.hizmetler.services[i] ?? defaultContent.hizmetler.services[0])
+        )
+      : defaultContent.hizmetler.services;
+
+  const projectsRaw = p?.referanslar?.projects;
+  const projects: ProjectData[] =
+    Array.isArray(projectsRaw) && projectsRaw.length > 0
+      ? projectsRaw.map((pr: any, i: number) =>
+          migrateProject(pr, defaultContent.referanslar.projects[i] ?? defaultContent.referanslar.projects[0])
+        )
+      : defaultContent.referanslar.projects;
+
+  return {
+    anasayfa: {
+      heroTitle: toBi(p?.anasayfa?.heroTitle, defaultContent.anasayfa.heroTitle),
+      heroDescription: toBi(p?.anasayfa?.heroDescription, defaultContent.anasayfa.heroDescription),
+      heroVideoUrl:
+        typeof p?.anasayfa?.heroVideoUrl === "string"
+          ? p.anasayfa.heroVideoUrl
+          : defaultContent.anasayfa.heroVideoUrl,
+    },
+    hizmetler: { services },
+    referanslar: { projects },
+    hakkimizda: { aboutText: toBi(p?.hakkimizda?.aboutText, defaultContent.hakkimizda.aboutText) },
+    iletisim: {
+      address: toBi(p?.iletisim?.address, defaultContent.iletisim.address),
+      phone1: typeof p?.iletisim?.phone1 === "string" ? p.iletisim.phone1 : defaultContent.iletisim.phone1,
+      phone2: typeof p?.iletisim?.phone2 === "string" ? p.iletisim.phone2 : defaultContent.iletisim.phone2,
+      email1: typeof p?.iletisim?.email1 === "string" ? p.iletisim.email1 : defaultContent.iletisim.email1,
+      email2: typeof p?.iletisim?.email2 === "string" ? p.iletisim.email2 : defaultContent.iletisim.email2,
+    },
+    socialVisibility: { ...defaultContent.socialVisibility, ...(p?.socialVisibility ?? {}) },
+    socialLinks: { ...defaultContent.socialLinks, ...(p?.socialLinks ?? {}) },
+  };
+}
+
 function loadFromStorage(): SiteContent {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return defaultContent;
-    const p = JSON.parse(stored);
-
-    const servicesRaw = p?.hizmetler?.services;
-    const services: ServiceData[] =
-      Array.isArray(servicesRaw) && servicesRaw.length > 0
-        ? servicesRaw.map((s: any, i: number) =>
-            migrateService(
-              s,
-              defaultContent.hizmetler.services[i] ?? defaultContent.hizmetler.services[0]
-            )
-          )
-        : defaultContent.hizmetler.services;
-
-    const projectsRaw = p?.referanslar?.projects;
-    const projects: ProjectData[] =
-      Array.isArray(projectsRaw) && projectsRaw.length > 0
-        ? projectsRaw.map((pr: any, i: number) =>
-            migrateProject(
-              pr,
-              defaultContent.referanslar.projects[i] ?? defaultContent.referanslar.projects[0]
-            )
-          )
-        : defaultContent.referanslar.projects;
-
-    return {
-      anasayfa: {
-        heroTitle: toBi(p?.anasayfa?.heroTitle, defaultContent.anasayfa.heroTitle),
-        heroDescription: toBi(p?.anasayfa?.heroDescription, defaultContent.anasayfa.heroDescription),
-        heroVideoUrl:
-          typeof p?.anasayfa?.heroVideoUrl === "string"
-            ? p.anasayfa.heroVideoUrl
-            : defaultContent.anasayfa.heroVideoUrl,
-      },
-      hizmetler: { services },
-      referanslar: { projects },
-      hakkimizda: {
-        aboutText: toBi(p?.hakkimizda?.aboutText, defaultContent.hakkimizda.aboutText),
-      },
-      iletisim: {
-        address: toBi(p?.iletisim?.address, defaultContent.iletisim.address),
-        phone1:
-          typeof p?.iletisim?.phone1 === "string"
-            ? p.iletisim.phone1
-            : defaultContent.iletisim.phone1,
-        phone2:
-          typeof p?.iletisim?.phone2 === "string"
-            ? p.iletisim.phone2
-            : defaultContent.iletisim.phone2,
-        email1:
-          typeof p?.iletisim?.email1 === "string"
-            ? p.iletisim.email1
-            : defaultContent.iletisim.email1,
-        email2:
-          typeof p?.iletisim?.email2 === "string"
-            ? p.iletisim.email2
-            : defaultContent.iletisim.email2,
-      },
-      socialVisibility: { ...defaultContent.socialVisibility, ...(p?.socialVisibility ?? {}) },
-      socialLinks: { ...defaultContent.socialLinks, ...(p?.socialLinks ?? {}) },
-    };
+    return normalizeContent(JSON.parse(stored));
   } catch (e) {
     console.warn("SiteContent localStorage parse hatası:", e);
     return defaultContent;
   }
 }
 
+function cacheContent(c: SiteContent) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(c));
+  } catch (e) {
+    console.warn("SiteContent localStorage cache yazılamadı:", e);
+  }
+}
+
 /* ─── Provider ─── */
 export function SiteContentProvider({ children }: { children: ReactNode }) {
+  // İlk render: localStorage cache. Ardından Supabase'den gelen veri override eder.
   const [content, setContent] = useState<SiteContent>(loadFromStorage);
   const [heroVideoSrc, setHeroVideoSrc] = useState<string>(heroDefault);
+  const [messages, setMessages] = useState<ContactMessage[]>(() => {
+    try {
+      const raw = localStorage.getItem(MESSAGES_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
 
-  // Başlangıçta indexedDB'den video yükle
+  // Son Supabase'e yazılmış ham JSON string'ini tut; realtime event'leri filtrelemek için
+  const lastWrittenRef = useRef<string>("");
+
+  /* ─── Supabase'den ilk yükleme + realtime abonelik ─── */
   useEffect(() => {
+    if (!isSupabaseReady() || !supabase) return;
+
+    let cancelled = false;
+
+    // site_content satırını çek
+    supabase
+      .from("site_content")
+      .select("content")
+      .eq("id", SITE_ROW_ID)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.warn("site_content fetch hatası:", error.message);
+          return;
+        }
+        if (data?.content) {
+          const normalized = normalizeContent(data.content);
+          setContent(normalized);
+          cacheContent(normalized);
+        }
+      });
+
+    // Kayıtlı mesajları çek
+    supabase
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          // RLS nedeniyle anon rolü okuyamayabilir — sessiz geç
+          return;
+        }
+        if (Array.isArray(data)) {
+          setMessages(data.map(mapDbMessage));
+        }
+      });
+
+    // Realtime: site_content değişimlerini dinle
+    const siteChannel = supabase
+      .channel("site_content_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "site_content", filter: `id=eq.${SITE_ROW_ID}` },
+        (payload) => {
+          const row: any = payload.new;
+          if (!row?.content) return;
+          const json = JSON.stringify(row.content);
+          // Biz yazdıysak tekrar işlemeye gerek yok
+          if (json === lastWrittenRef.current) return;
+          const normalized = normalizeContent(row.content);
+          setContent(normalized);
+          cacheContent(normalized);
+        }
+      )
+      .subscribe();
+
+    // Realtime: contact_messages değişimleri
+    const msgChannel = supabase
+      .channel("contact_messages_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "contact_messages" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const row = mapDbMessage(payload.new);
+            setMessages((prev) => (prev.some((m) => m.id === row.id) ? prev : [row, ...prev]));
+          } else if (payload.eventType === "UPDATE") {
+            const row = mapDbMessage(payload.new);
+            setMessages((prev) => prev.map((m) => (m.id === row.id ? row : m)));
+          } else if (payload.eventType === "DELETE") {
+            const oldId = (payload.old as any)?.id;
+            if (oldId) setMessages((prev) => prev.filter((m) => m.id !== oldId));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase!.removeChannel(siteChannel);
+      supabase!.removeChannel(msgChannel);
+    };
+  }, []);
+
+  /* ─── IndexedDB'den video (legacy) ─── */
+  useEffect(() => {
+    // Önce Supabase'deki URL varsa onu kullan
+    if (content.anasayfa.heroVideoUrl) {
+      setHeroVideoSrc(content.anasayfa.heroVideoUrl);
+      return;
+    }
     loadVideoFromDB().then((url) => {
       if (url) setHeroVideoSrc(url);
     });
-  }, []);
+  }, [content.anasayfa.heroVideoUrl]);
 
-  // Sekmeler arası senkronizasyon: başka sekmede localStorage güncellenince
-  // bu sekmedeki state'i de yenile (admin kaydet → ana sayfa anında güncellensin).
+  /* ─── Diğer sekmelerle localStorage cache senkronizasyonu (Supabase yoksa bile çalışır) ─── */
   useEffect(() => {
     const handler = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY || e.key === null) {
@@ -382,83 +444,68 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
-  // localStorage yazımı quota hatası fırlatabilir (büyük base64 görseller vs).
-  // Hatayı yutmuyoruz; çağıran katmanın bilmesi için false dönüyoruz.
-  const saveToStorage = (newContent: SiteContent): boolean => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newContent));
+  /* ─── İçerik yazımı: Supabase öncelikli, localStorage cache yedek ─── */
+  const persistContent = async (newContent: SiteContent): Promise<boolean> => {
+    setContent(newContent);
+    cacheContent(newContent);
+
+    if (isSupabaseReady() && supabase) {
+      const payload = { id: SITE_ROW_ID, content: newContent, updated_at: new Date().toISOString() };
+      lastWrittenRef.current = JSON.stringify(newContent);
+      const { error } = await supabase
+        .from("site_content")
+        .upsert(payload, { onConflict: "id" });
+      if (error) {
+        console.error("site_content upsert hatası:", error.message);
+        return false;
+      }
       return true;
-    } catch (e) {
-      console.error("SiteContent localStorage yazma hatası:", e);
-      return false;
     }
+    return true; // localStorage'a yazıldı, başarı sayılır
   };
 
-  const updateAnasayfa = (data: AnasayfaContent): boolean => {
-    const updated = { ...content, anasayfa: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
-
-  const updateHizmetler = (data: HizmetlerContent): boolean => {
-    const updated = { ...content, hizmetler: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
-
-  const updateReferanslar = (data: ReferanslarContent): boolean => {
-    const updated = { ...content, referanslar: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
-
-  const updateHakkimizda = (data: HakkimizdaContent): boolean => {
-    const updated = { ...content, hakkimizda: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
-
-  const updateIletisim = (data: IletisimContent): boolean => {
-    const updated = { ...content, iletisim: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
-
-  const updateSocialVisibility = (data: SocialVisibility): boolean => {
-    const updated = { ...content, socialVisibility: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
-
-  const updateSocialLinks = (data: SocialLinks): boolean => {
-    const updated = { ...content, socialLinks: data };
-    setContent(updated);
-    return saveToStorage(updated);
-  };
+  const updateAnasayfa = (data: AnasayfaContent) => persistContent({ ...content, anasayfa: data });
+  const updateHizmetler = (data: HizmetlerContent) => persistContent({ ...content, hizmetler: data });
+  const updateReferanslar = (data: ReferanslarContent) => persistContent({ ...content, referanslar: data });
+  const updateHakkimizda = (data: HakkimizdaContent) => persistContent({ ...content, hakkimizda: data });
+  const updateIletisim = (data: IletisimContent) => persistContent({ ...content, iletisim: data });
+  const updateSocialVisibility = (data: SocialVisibility) => persistContent({ ...content, socialVisibility: data });
+  const updateSocialLinks = (data: SocialLinks) => persistContent({ ...content, socialLinks: data });
 
   /* ─── İletişim mesajları ─── */
-  const [messages, setMessages] = useState<ContactMessage[]>(() => {
+  const persistMessagesCache = (list: ContactMessage[]) => {
     try {
-      const raw = localStorage.getItem(MESSAGES_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const persistMessages = (list: ContactMessage[]) => {
-    try {
-      localStorage.setItem(MESSAGES_KEY, JSON.stringify(list));
+      // Çok büyük olmasın diye son 200 mesajı cache'le
+      localStorage.setItem(MESSAGES_KEY, JSON.stringify(list.slice(0, 200)));
     } catch (e) {
-      console.error("Mesajlar kaydedilemedi:", e);
+      console.error("Mesajlar cache'e yazılamadı:", e);
     }
   };
 
-  const addMessage = (
+  const addMessage = async (
     m: Omit<ContactMessage, "id" | "createdAt" | "read">
-  ): ContactMessage => {
+  ): Promise<ContactMessage> => {
+    if (isSupabaseReady() && supabase) {
+      const { data, error } = await supabase
+        .from("contact_messages")
+        .insert({
+          name: m.name,
+          email: m.email,
+          phone: m.phone,
+          subject: m.subject,
+          message: m.message,
+          email_sent: m.emailSent ?? false,
+        })
+        .select()
+        .single();
+      if (!error && data) {
+        const row = mapDbMessage(data);
+        setMessages((prev) => (prev.some((x) => x.id === row.id) ? prev : [row, ...prev]));
+        return row;
+      }
+      console.warn("contact_messages insert hatası:", error?.message);
+    }
+    // Fallback: local
     const full: ContactMessage = {
       ...m,
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
@@ -467,26 +514,63 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     };
     const next = [full, ...messages];
     setMessages(next);
-    persistMessages(next);
+    persistMessagesCache(next);
     return full;
   };
 
-  const markMessageRead = (id: string, read = true) => {
+  const markMessageRead = async (id: string, read = true) => {
     const next = messages.map((m) => (m.id === id ? { ...m, read } : m));
     setMessages(next);
-    persistMessages(next);
+    persistMessagesCache(next);
+    if (isSupabaseReady() && supabase) {
+      const { error } = await supabase.from("contact_messages").update({ read }).eq("id", id);
+      if (error) console.warn("markMessageRead hatası:", error.message);
+    }
   };
 
-  const deleteMessage = (id: string) => {
+  const deleteMessage = async (id: string) => {
     const next = messages.filter((m) => m.id !== id);
     setMessages(next);
-    persistMessages(next);
+    persistMessagesCache(next);
+    if (isSupabaseReady() && supabase) {
+      const { error } = await supabase.from("contact_messages").delete().eq("id", id);
+      if (error) console.warn("deleteMessage hatası:", error.message);
+    }
   };
 
-  const setHeroVideoFile = (file: File) => {
+  /* ─── Hero video ─── */
+  const setHeroVideoFile = async (file: File) => {
+    // Anında önizleme için blob URL kullan
     const blobUrl = URL.createObjectURL(file);
     setHeroVideoSrc(blobUrl);
+    // Legacy: IndexedDB'ye kaydet (Supabase yoksa yedek)
     saveVideoToDB(file);
+
+    // Supabase Storage'a yükle
+    if (isSupabaseReady() && supabase) {
+      try {
+        const ext = file.name.split(".").pop() || "mp4";
+        const path = `hero/hero-${Date.now()}.${ext}`;
+        const { error } = await supabase.storage
+          .from("media")
+          .upload(path, file, { upsert: true, contentType: file.type });
+        if (error) {
+          console.error("Hero video upload hatası:", error.message);
+          return;
+        }
+        const { data } = supabase.storage.from("media").getPublicUrl(path);
+        const publicUrl = data?.publicUrl ?? "";
+        if (publicUrl) {
+          setHeroVideoSrc(publicUrl);
+          await persistContent({
+            ...content,
+            anasayfa: { ...content.anasayfa, heroVideoUrl: publicUrl },
+          });
+        }
+      } catch (e) {
+        console.error("Hero video Supabase yükleme hatası:", e);
+      }
+    }
   };
 
   return (
@@ -521,7 +605,22 @@ export function useSiteContent() {
   return context;
 }
 
-/* ─── IndexedDB helpers (video dosyası büyük, localStorage'a sığmaz) ─── */
+/* ─── DB satırı → ContactMessage mapping ─── */
+function mapDbMessage(row: any): ContactMessage {
+  return {
+    id: String(row.id),
+    name: row.name ?? "",
+    email: row.email ?? "",
+    phone: row.phone ?? "",
+    subject: row.subject ?? "",
+    message: row.message ?? "",
+    createdAt: row.created_at ?? new Date().toISOString(),
+    read: !!row.read,
+    emailSent: !!row.email_sent,
+  };
+}
+
+/* ─── IndexedDB helpers (Supabase yoksa video için fallback) ─── */
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("dpi_teknoloji_db", 1);
@@ -550,11 +649,8 @@ async function loadVideoFromDB(): Promise<string | null> {
       const tx = db.transaction("media", "readonly");
       const req = tx.objectStore("media").get(VIDEO_STORAGE_KEY);
       req.onsuccess = () => {
-        if (req.result) {
-          resolve(URL.createObjectURL(req.result));
-        } else {
-          resolve(null);
-        }
+        if (req.result) resolve(URL.createObjectURL(req.result));
+        else resolve(null);
       };
       req.onerror = () => resolve(null);
     });
