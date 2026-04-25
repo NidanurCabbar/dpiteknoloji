@@ -89,6 +89,7 @@ export function Admin() {
   /* ─── Hizmetler state ─── */
   const [services, setServices] = useState<ServiceData[]>(content.hizmetler.services);
   const serviceImageRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const projectLogoRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   /* ─── Referanslar state ─── */
   const [projects, setProjects] = useState<ProjectData[]>(content.referanslar.projects);
@@ -418,7 +419,6 @@ export function Admin() {
   };
 
   // Referans logosunu yerel dosyadan yükle: canvas ile küçült → PNG (şeffaflık için)
-  const projectLogoRefs = useRef<(HTMLInputElement | null)[]>([]);
   const handleProjectLogoFile = async (
     index: number,
     e: React.ChangeEvent<HTMLInputElement>
