@@ -158,12 +158,28 @@ export function Admin() {
     content.iletisim.email2,
   ]);
 
+  // Sosyal medya state'ini DIŞ kaynak (başka sekme / başka cihaz) güncellediğinde
+  // senkronize et. Ama içerik gerçekten değişmedikçe (yalnızca obje referansı
+  // yenilendiyse) local state'i ezme — yoksa kullanıcının yaptığı henüz
+  // kaydedilmemiş değişiklikler (toggle açma, link yazma) gereksiz yere geri
+  // alınabilir.
+  const lastSyncedVisRef = useRef<string>(JSON.stringify(content.socialVisibility));
+  const lastSyncedLinksRef = useRef<string>(JSON.stringify(content.socialLinks));
+
   useEffect(() => {
-    setSocialVis(content.socialVisibility);
+    const incoming = JSON.stringify(content.socialVisibility);
+    if (incoming !== lastSyncedVisRef.current) {
+      lastSyncedVisRef.current = incoming;
+      setSocialVis(content.socialVisibility);
+    }
   }, [content.socialVisibility]);
 
   useEffect(() => {
-    setSocialLinks(content.socialLinks);
+    const incoming = JSON.stringify(content.socialLinks);
+    if (incoming !== lastSyncedLinksRef.current) {
+      lastSyncedLinksRef.current = incoming;
+      setSocialLinks(content.socialLinks);
+    }
   }, [content.socialLinks]);
 
   // Render-time yönlendirme yerine Navigate bileşeni (Strict Mode uyumlu)
