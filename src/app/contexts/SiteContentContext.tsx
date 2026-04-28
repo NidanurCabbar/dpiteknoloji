@@ -207,6 +207,12 @@ interface SiteContentContextType {
   updateIletisim: (data: IletisimContent) => Promise<boolean>;
   updateSocialVisibility: (data: SocialVisibility) => Promise<boolean>;
   updateSocialLinks: (data: SocialLinks) => Promise<boolean>;
+  /**
+   * Sosyal medya görünürlüğü ve linklerini TEK işlemde günceller.
+   * İki ayrı update peş peşe çağrılırsa stale `content` closure'ı yüzünden
+   * ikinci yazım birinciyi ezdiğinden, save akışları bu fonksiyonu kullanmalı.
+   */
+  updateSocial: (vis: SocialVisibility, links: SocialLinks) => Promise<boolean>;
   setHeroVideoFile: (file: File) => Promise<void>;
   // İletişim mesajları
   messages: ContactMessage[];
@@ -478,6 +484,8 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
   const updateIletisim = (data: IletisimContent) => persistContent({ ...content, iletisim: data });
   const updateSocialVisibility = (data: SocialVisibility) => persistContent({ ...content, socialVisibility: data });
   const updateSocialLinks = (data: SocialLinks) => persistContent({ ...content, socialLinks: data });
+  const updateSocial = (vis: SocialVisibility, links: SocialLinks) =>
+    persistContent({ ...content, socialVisibility: vis, socialLinks: links });
 
   /* ─── İletişim mesajları ─── */
   const persistMessagesCache = (list: ContactMessage[]) => {
@@ -592,6 +600,7 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
         updateIletisim,
         updateSocialVisibility,
         updateSocialLinks,
+        updateSocial,
         setHeroVideoFile,
         messages,
         addMessage,

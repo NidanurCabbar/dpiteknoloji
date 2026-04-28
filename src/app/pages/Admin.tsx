@@ -60,7 +60,7 @@ async function fileToCompressedDataUrl(
 
 export function Admin() {
   const { logout, isAdmin, changePassword } = useAuth();
-  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocialVisibility, updateSocialLinks, setHeroVideoFile, messages, markMessageRead, deleteMessage } = useSiteContent();
+  const { content, updateAnasayfa, updateHizmetler, updateReferanslar, updateHakkimizda, updateIletisim, updateSocial, setHeroVideoFile, messages, markMessageRead, deleteMessage } = useSiteContent();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"anasayfa" | "hizmetler" | "referanslar" | "hakkimizda" | "iletisim" | "sosyal" | "mesajlar" | "hesap">("anasayfa");
   const unreadCount = messages.filter((m) => !m.read).length;
@@ -260,10 +260,11 @@ export function Admin() {
       showToast(`⚠ Geçersiz URL: ${invalid.join(", ")} — sadece https:// ile başlayan adres girin`);
       return;
     }
-    const ok1 = await updateSocialVisibility(socialVis);
-    const ok2 = await updateSocialLinks(socialLinks);
+    // Görünürlük ve linkler tek payload olarak kaydedilir; aksi halde
+    // peş peşe iki update stale `content` yüzünden birbirini ezerdi.
+    const ok = await updateSocial(socialVis, socialLinks);
     showToast(
-      ok1 && ok2
+      ok
         ? "✓ Sosyal medya ayarları kaydedildi!"
         : "⚠ Kaydetme başarısız"
     );
