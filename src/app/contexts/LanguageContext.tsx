@@ -33,7 +33,7 @@ const en: Dict = {
   "footer.privacy": "Privacy Policy",
   "footer.cookies": "Cookie Policy",
   "footer.service1": "Professional LED Display Systems",
-  "footer.service2": "Sound, Light and Image Systems",
+  "footer.service2": "Professional Sound, Light and Image Systems",
   "footer.service3": "Low-Current Systems",
 
   // Home (Anasayfa)
@@ -212,7 +212,7 @@ const tr: Dict = {
   "footer.privacy": "Gizlilik Politikası",
   "footer.cookies": "Çerez Politikası",
   "footer.service1": "Profesyonel LED Ekran Sistemleri",
-  "footer.service2": "Ses, Işık ve Görüntü Sistemleri",
+  "footer.service2": "Profesyonel Ses, Işık ve Görüntü Sistemleri",
   "footer.service3": "Zayıf Akım Sistemleri",
 
   // Home (Anasayfa)
