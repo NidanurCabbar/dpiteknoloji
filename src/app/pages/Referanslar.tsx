@@ -83,15 +83,15 @@ export function Referanslar() {
             </p>
           </FadeIn>
           {/*
-            Sabit kolonlu responsive grid: kart sayısı arttıkça
-            yalnızca alta yeni satırlar eklenir, layout asla bozulmaz.
-            Yeni referanslar (createdAt'e göre sıralı) sol-üstten doldurulur.
+            Orijinal flex-wrap düzeni: kartlar ortalanır ve doğal akar.
+            Sıralama (createdAt azalan) ile yeni eklenen referans DOM'da
+            en başta yer aldığı için her zaman ilk satırın solunda görünür.
           */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
+          <div className="flex flex-wrap justify-center gap-8">
             {references.map((ref, index) => (
               <FadeIn key={index} delay={Math.min(index, 7) * 0.05}>
                 <div
-                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[240px] w-full max-w-[260px]"
+                  className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 min-h-[240px] w-[260px]"
                 >
                   <div className="w-full h-24 flex items-center justify-center mb-4">
                     {ref.logo ? (
