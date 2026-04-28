@@ -63,6 +63,8 @@ export function Hizmetler() {
                   <img
                     src={service.image}
                     alt={service.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-[500px] object-cover rounded-xl shadow-lg"
                   />
                 </div>

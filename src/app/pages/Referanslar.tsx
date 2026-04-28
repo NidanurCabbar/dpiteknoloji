@@ -98,6 +98,8 @@ export function Referanslar() {
                       <img
                         src={ref.logo}
                         alt={ref.client}
+                        loading="lazy"
+                        decoding="async"
                         className="max-h-24 max-w-full object-contain"
                       />
                     ) : (

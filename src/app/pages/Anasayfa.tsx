@@ -56,7 +56,7 @@ export function Anasayfa() {
             loop
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             controlsList="nodownload noremoteplayback"
             disablePictureInPicture
             onContextMenu={(e) => e.preventDefault()}
