@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { useSiteContent, pickLang } from "../contexts/SiteContentContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { safeHttpUrl } from "../lib/safeUrl";
+import { LegalModal } from "./LegalModal";
+import { legalDocs, LegalDoc } from "../data/legalContent";
 
 const brandColors: Record<string, string> = {
   facebook: "#1877F2",
@@ -18,6 +21,12 @@ const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const { content } = useSiteContent();
+  const [legalModal, setLegalModal] = useState<LegalDoc["key"] | null>(null);
+  const activeDoc = legalModal ? legalDocs[legalModal] : null;
+  const openLegal = (key: LegalDoc["key"]) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setLegalModal(key);
+  };
   const vis = content.socialVisibility;
   const links = content.socialLinks;
   const { t, lang } = useLanguage();
@@ -241,17 +250,43 @@ export function Footer() {
           &copy; {currentYear} DPI Teknoloji. {t("footer.copyright")}
         </p>
         <div style={{ display: "flex", gap: 24 }}>
-          <a href="#" style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none" }}>
+          <a
+            href="#"
+            onClick={openLegal("kvkk")}
+            style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none", cursor: "pointer" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--dpi-accent)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.35)"; }}
+          >
             {t("footer.kvkk")}
           </a>
-          <a href="#" style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none" }}>
+          <a
+            href="#"
+            onClick={openLegal("privacy")}
+            style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none", cursor: "pointer" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--dpi-accent)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.35)"; }}
+          >
             {t("footer.privacy")}
           </a>
-          <a href="#" style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none" }}>
+          <a
+            href="#"
+            onClick={openLegal("cookies")}
+            style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, textDecoration: "none", cursor: "pointer" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--dpi-accent)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.35)"; }}
+          >
             {t("footer.cookies")}
           </a>
         </div>
       </div>
+
+      <LegalModal
+        isOpen={!!activeDoc}
+        onClose={() => setLegalModal(null)}
+        title={activeDoc?.title ?? ""}
+      >
+        {activeDoc?.body}
+      </LegalModal>
     </footer>
   );
 }
